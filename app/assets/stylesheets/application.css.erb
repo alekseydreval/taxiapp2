@@ -1,0 +1,113 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the top of the
+ * compiled file, but it's generally better to create a new file per style scope.
+ *
+ *= require_self
+ #= require_tree ../../../vendor/assets/stylesheets/
+ *= require pickadate/default
+ *= require pickadate/default.date
+ *= require pickadate/default.time
+ *= require_tree .
+ *= require font-awesome
+ */
+
+@font-face {
+  font-family: 'ProximaNova-Extrabld';
+  src:url('ProximaNova-Extrabld.otf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+#map
+{
+ height: 500px;
+}
+#pdf_ignore {
+  display: none;
+}
+body {
+  background-image: url(<%= asset_path 'bg_pattern.gif' %> );
+  background-repeat: repeat;
+}
+.btn-panel-heading{
+  vertical-align: center !important;
+  margin: -10px !important;
+}
+.chat-box {
+  height: 250px;
+  overflow: auto;
+}
+.fixed-height-380 {
+  height: 380px;
+  overflow: auto;
+}
+
+.leaflet-control-layers-expanded {
+  width: 100px !important;
+  height: 100px !important;
+}
+
+.input-location {
+  width: 61%;
+}
+
+#use_my_location {
+  margin: 7px 0 15px 0;
+  display: block;
+  width: 28px;
+  height: 20px;
+}
+
+nav * {
+  font-size: 20px;
+}
+
+.new_ticket input{
+  display: block;
+}
+
+
+.input-append .btn {
+  height: 40px;
+}
+
+.input-append .btn .btn-centred-content {
+  margin-top: 10px;
+}
+
+.login-container {
+  margin: 0 auto;
+  width: 60%;
+  margin-top: 10%;
+}
+
+.login_form {
+  padding-left: 30px;
+}
+
+.login_form input {
+  height: 35px !important;
+}
+
+.span6{
+  margin: 0 !important;
+}
+
+.main-heading {
+  font-family: ProximaNova-Extrabld, sans-serif;
+  text-transform: uppercase;
+  margin: 20px auto 0;
+  font-size: 3.5em;
+  text-align: center;
+}
+
+.logo {
+  padding-top: 20px;
+}
+

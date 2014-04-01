@@ -1,0 +1,43 @@
+.panel.panel-default
+  .panel-heading{ style: "height: 35px; " }
+    %h5.panel-title
+      Новая поездка
+      .pull-right
+        %input.btn.btn-primary.btn-panel-heading#submit_ticket_form{:name => "commit", :type => "submit", :value => "Save", :style => "margin-top: -3px !important;"}
+  .panel-body
+    .row-fluid
+      .span6.new_ticket
+        = form_for Ticket.new do |f|
+          = f.text_field :name, id: 'ticket_client_name', class: 'input-block-level input-large', placeholder: "Имя"
+          %br
+          = f.text_field :phone, class: 'input-block-level input-large', placeholder: "Телефон"
+          %br
+          = f.text_field :pick_up_latlon, class: 'address-picker input-large input-block-level', placeholder: "Адрес подачи"
+          %br
+          %a.btn.btn-default{type: "button", style: "margin-bottom: 10px;"}
+            .btn-centred-content
+              %i.icon-globe
+              Мое местоположение
+          %br
+          %input#ticket_start_geolat{:name => "ticket[start_geolat]", :type => "hidden", :value => "0"}
+          %input#ticket_start_geolong{:name => "ticket[start_geolong]", :type => "hidden", :value => "0"}
+          = f.text_field :drop_off_latlon, class: 'address-picker input-large input-block-level', placeholder: "Адрес назначения"
+          %br
+          %a.btn.btn-default{type: "button", style: "margin-bottom: 10px;"}
+            .btn-centred-content
+              %i.icon-globe
+              Мое местоположение
+          %br
+          %input#ticket_stop_geolat{:name => "ticket[stop_geolat]", :type => "hidden", :value => "0"}
+          %input#ticket_stop_geolong{:name => "ticket[stop_geolong]", :type => "hidden", :value => "0"}
+          #showSuggestionsModal.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "headerText", :role => "dialog", :style => "display: none;", :tabindex => "-1"}
+            .modal-header
+              %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+              %h3#headerText Select Address
+              .modal-body
+                .suggestionsBtnList
+          %input#pickup_date.input-block-level.input-large.picker__input{:name => "pickup_date", :placeholder => "Pickup date", :readonly => "", :type => "text", :value => ""}
+          %br
+          %input#pickup_time.input-block-level.input-large.picker__input{:name => "pickup_time", :placeholder => "Время подачи", :readonly => "", :type => "text", :value => ""}
+      .span6
+        %textarea#ticket_note.input-block-level{:class => ".text-area-large", :name => "ticket[note]", :placeholder => "Note", :rows => "20", :style => "font-size: 22px"}

@@ -1,0 +1,11 @@
+.row-fluid
+  #C1.span12
+    .inner-container-fluid
+      .wiselinks-current-page{"data-page" => "users#show"}
+      #driver_show.tickets-list{"data-ticket-reload-path" => "/users/2"}
+        #ride
+          .panel.panel-default
+            .panel-heading
+              %h5.panel-title
+                = "#{current_user.login} - запланированные поездки"
+            .panel-body-compact.fixed-height-380

@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  state: MyString
+  name: MyString
+  phone: MyString
+  pick_up_latlon: MyText
+  drop_off_latlon: MyText
+  pick_up_time: 2014-03-30 14:58:37
+  drop_off_time: 2014-03-30 14:58:37
+
+two:
+  state: MyString
+  name: MyString
+  phone: MyString
+  pick_up_latlon: MyText
+  drop_off_latlon: MyText
+  pick_up_time: 2014-03-30 14:58:37
+  drop_off_time: 2014-03-30 14:58:37

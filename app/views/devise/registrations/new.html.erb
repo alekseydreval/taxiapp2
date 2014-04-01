@@ -11,6 +11,14 @@
 
   <div><%= f.label :password_confirmation %><br />
     <%= f.password_field :password_confirmation, autocomplete: "off" %></div>
+  <div>
+
+  <div>
+    <%= f.label :select_role %>
+    <%= f.select :role, options_for_select(User::VALID_ROLES) %>
+  </div>
+
+  </div>
 
   <div><%= f.submit "Sign up" %></div>
 <% end %>

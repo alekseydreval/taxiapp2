@@ -1,0 +1,21 @@
+.inner-container-fluid
+  .login-container
+    .row-fluid
+      .span6
+        .pull-right.midmid
+          %img{alt: "Logo large", src: "/assets/logo_large.png", class: 'logo'}/
+      .span6.middle
+        = form_for resource, as: resource_name, url: session_path(resource_name), html: { class: 'login_form' } do |f|
+          %div{style: "margin:0;padding:0;display:inline"}
+            %input{name: "utf8", type: "hidden", value: "✓"}/
+            %input{name: "authenticity_token", type: "hidden", value: "El4hCPFo/MEo+lypnk1PEm85uxCXYcIj41ATVVmEQas="}/
+          .row-fluid
+            = f.text_field :login, class: 'span12', placeholder: 'Логин'
+          .row-fluid
+            = f.password_field :password, autocomplete: "off", class: 'span12', placeholder: 'Пароль'
+          .row-fluid
+            = f.submit "Войти", class: 'btn btn-inverse span12'
+          = f.hidden_field :remember_me, :value => true
+
+  %h1.main-heading Dispatch Application
+

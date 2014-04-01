@@ -1,9 +1,16 @@
 class User < ActiveRecord::Base
 
+  has_many :suggestions
+  has_many :tickets, through: :suggestions
+
+  VALID_ROLES = %w(dispatcher driver admin)
+
   validates :username,
   :uniqueness => {
     :case_sensitive => false
   }
+
+  validates :role, :inclusion => { :in => VALID_ROLES }
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
