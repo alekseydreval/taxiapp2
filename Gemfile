@@ -30,6 +30,8 @@ gem 'haml'
 gem 'simple_form'
 gem 'russian'
 
+gem 'inherited_resources'
+gem 'responders'
 
 gem 'quiet_assets'
 

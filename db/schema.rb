@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140421072208) do
+ActiveRecord::Schema.define(version: 20140421112453) do
 
   create_table "suggestions", force: true do |t|
     t.string   "state"
@@ -33,6 +33,9 @@ ActiveRecord::Schema.define(version: 20140421072208) do
     t.datetime "updated_at"
     t.string   "pick_up_location"
     t.string   "drop_off_location"
+    t.integer  "dispatcher_id"
+    t.integer  "driver_id"
+    t.text     "note"
   end
 
   create_table "users", force: true do |t|

@@ -1,0 +1,41 @@
+#C1.span12
+  .inner-container-fluid
+    #driver_show.tickets-list{"data-ticket-reload-path" => "/users/2"}
+      #ride
+        .panel.panel-default{style: "margin-bottom: 70px;"}
+          .panel-heading
+            %h5.panel-title
+              Неназначенные поездки
+          .panel-body-compact
+            - for ticket in @tickets
+              .well.well-compact
+                .pull-right
+                  %b
+                    = ticket.formatted_time
+                  %br
+                  = link_to edit_ticket_path(ticket), class: 'btn tickets_action_button' do
+                    = fa_icon "edit", text: "Редактировать"
+                  %br
+                  = link_to ticket_path(ticket), class: 'btn tickets_action_button' do
+                    = fa_icon "angle-double-right", text: "Просмотр"
+                %div
+                  Имя клиента:
+                  %b
+                    = ticket.name
+                %div
+                  Адрес отправления:
+                  %b
+                    = ticket.pick_up_location
+                %div
+                  Адрес прибытия:
+                  %b
+                    = ticket.drop_off_location
+                %div
+                  Контактный номер:
+                  %b
+                    = ticket.phone
+                - if ticket.note
+                  %div
+                    Заметки:
+                    = ticket.note
+                %a.btn.btn-jumbo{"data-method" => "patch", "data-push" => "true", "data-target" => "div.inner-container-fluid", href: "/tickets/305/start", rel: "nofollow"} Предложить

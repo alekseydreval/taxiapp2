@@ -1,34 +1,18 @@
-class TicketsController < ApplicationController
-  load_resource except: :create
+class TicketsController < InheritedResources::Base
+  load_resource except: :create, collection: [:open_queue, :scheduled]
 
-  def new
-    @ticket = Ticket.new
+  def open_queue
+    @tickets = current_user.tickets.unscheduled
   end
 
-  def create
-    @ticket = Ticket.new(ticket_params)
-
-    if @ticket.save
-      redirect_to :root, notice: 'Succeess'
-    else
-      render :new
-    end
+  def scheduled
+    @tickets = current_user.tickets.scheduled
   end
-
-  def edit
-  end
-
-  def update
-  end
-
-  def destroy
-  end
-
 
   private
-    def ticket_params
-      params.require(:ticket).permit(:name, :phone, :pick_up_latlon, :drop_off_latlon, :pick_up_time, :pick_up_location, :drop_off_location)
+    def permitted_params
+      params.permit(ticket: [:name, :phone, :pick_up_latlon, :drop_off_latlon, 
+                             :pick_up_time, :pick_up_location, :drop_off_location, :note])
     end
-
 
 end

@@ -6,9 +6,9 @@ class Ability
 
     case user.role
     when 'dispatcher'
-      nil
+      can :manage, :all
     when 'driver'
-      nil
+      can :manage, :all
     when 'admin'
       can :manage, :all
     end

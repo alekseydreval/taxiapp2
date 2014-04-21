@@ -6,8 +6,8 @@
         %input.btn.btn-primary.btn-panel-heading#submit_ticket_form{:name => "commit", :type => "submit", :value => "Save", :style => "margin-top: -3px !important;"}
   .panel-body
     .row-fluid
-      .span6.new_ticket
-        = simple_form_for @ticket, id: 'ticket_form' do |f|
+      = simple_form_for @ticket, id: 'ticket_form' do |f|
+        .span6.new_ticket
           = f.input :name, id: 'ticket_client_name', input_html: { class: 'input-block-level input-large'}, placeholder: "Имя", label: false
           = f.input :phone, input_html: {class: 'input-block-level input-large', placeholder: "Телефон"}, label: false
           = f.input :pick_up_location, input_html: { class: 'address-picker input-large input-block-level' , placeholder: "Адрес подачи"}, label: false
@@ -31,8 +31,8 @@
               %h3#headerText Select Address
               .modal-body
                 .suggestionsBtnList
-          %input#pickup_date.input-block-level.input-large.picker__input{:name => "pickup_date", :placeholder => "Pickup date", :readonly => "", :type => "text", :value => ""}
+          %input#pickup_date.input-block-level.input-large.picker__input{ :placeholder => "Pickup date", :readonly => "", :type => "text", :value => ""}
           %br
-          %input#pickup_time.input-block-level.input-large.picker__input{:name => "pickup_time", :placeholder => "Время подачи", :readonly => "", :type => "text", :value => ""}
-      .span6
-        %textarea#ticket_note.input-block-level{:class => ".text-area-large", :name => "ticket[note]", :placeholder => "Note", :rows => "20", :style => "font-size: 22px"}
+          %input#pickup_time.input-block-level.input-large.picker__input{ :placeholder => "Время подачи", :readonly => "", :type => "text", :value => ""}
+        .span6
+          = f.input :note, input_html: { class: 'input-block-level text-area-large', style: "font-size: 22px", rows: "20" }, placeholder: "Заметки", label: false
