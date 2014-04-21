@@ -27,6 +27,11 @@ gem 'jquery-rails'
 gem 'pickadate-rails'
 gem 'font-awesome-rails'
 gem 'haml'
+gem 'simple_form'
+gem 'russian'
+
+
+gem 'quiet_assets'
 
 gem 'devise'
 gem 'cancan'

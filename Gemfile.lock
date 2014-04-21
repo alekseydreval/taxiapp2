@@ -75,6 +75,8 @@ GEM
     pickadate-rails (1.4.0)
       railties (>= 3.1.0)
     polyglot (0.3.4)
+    quiet_assets (1.0.2)
+      railties (>= 3.1, < 5.0)
     rack (1.5.2)
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -95,6 +97,8 @@ GEM
     rdoc (4.1.1)
       json (~> 1.4)
     ref (1.0.5)
+    russian (0.6.0)
+      i18n (>= 0.5.0)
     sass (3.2.18)
     sass-rails (4.0.2)
       railties (>= 4.0.0, < 5.0)
@@ -104,6 +108,9 @@ GEM
     sdoc (0.4.0)
       json (~> 1.8)
       rdoc (~> 4.0, < 5.0)
+    simple_form (3.0.2)
+      actionpack (~> 4.0)
+      activemodel (~> 4.0)
     sprockets (2.11.0)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -151,9 +158,12 @@ DEPENDENCIES
   jquery-rails
   less-rails
   pickadate-rails
+  quiet_assets
   rails (= 4.0.4)
+  russian
   sass-rails (~> 4.0.2)
   sdoc
+  simple_form
   sqlite3
   state_machine
   therubyracer

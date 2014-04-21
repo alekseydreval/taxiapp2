@@ -7,30 +7,24 @@
   .panel-body
     .row-fluid
       .span6.new_ticket
-        = form_for Ticket.new, id: 'ticket_form' do |f|
-          = f.text_field :name, id: 'ticket_client_name', class: 'input-block-level input-large', placeholder: "Имя"
-          %br
-          = f.text_field :phone, class: 'input-block-level input-large', placeholder: "Телефон"
-          %br
-          = f.text_field :pick_up_latlon, class: 'address-picker input-large input-block-level', placeholder: "Адрес подачи"
-          %br
+        = simple_form_for @ticket, id: 'ticket_form' do |f|
+          = f.input :name, id: 'ticket_client_name', input_html: { class: 'input-block-level input-large'}, placeholder: "Имя", label: false
+          = f.input :phone, input_html: {class: 'input-block-level input-large', placeholder: "Телефон"}, label: false
+          = f.input :pick_up_location, input_html: { class: 'address-picker input-large input-block-level' , placeholder: "Адрес подачи"}, label: false
           %a.btn.btn-default{type: "button", style: "margin-bottom: 10px;"}
             .btn-centred-content
               %i.icon-globe
               Мое местоположение
           %br
-          %input#ticket_start_geolat{:name => "ticket[start_geolat]", :type => "hidden", :value => "0"}
-          %input#ticket_start_geolong{:name => "ticket[start_geolong]", :type => "hidden", :value => "0"}
-          = f.text_field :drop_off_latlon, class: 'address-picker input-large input-block-level', placeholder: "Адрес назначения"
+          = f.input :drop_off_location, input_html: { class: 'address-picker input-large input-block-level' }, placeholder: "Адрес назначения", label: false
           = f.hidden_field :pick_up_time
-          %br
+          = f.hidden_field :pick_up_latlon
+          = f.hidden_field :drop_off_latlon
           %a.btn.btn-default{type: "button", style: "margin-bottom: 10px;"}
             .btn-centred-content
               %i.icon-globe
               Мое местоположение
           %br
-          %input#ticket_stop_geolat{:name => "ticket[stop_geolat]", :type => "hidden", :value => "0"}
-          %input#ticket_stop_geolong{:name => "ticket[stop_geolong]", :type => "hidden", :value => "0"}
           #showSuggestionsModal.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "headerText", :role => "dialog", :style => "display: none;", :tabindex => "-1"}
             .modal-header
               %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×

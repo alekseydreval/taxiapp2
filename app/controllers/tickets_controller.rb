@@ -2,15 +2,16 @@ class TicketsController < ApplicationController
   load_resource except: :create
 
   def new
+    @ticket = Ticket.new
   end
 
   def create
     @ticket = Ticket.new(ticket_params)
 
     if @ticket.save
-      redirect to: root_path, notice: 'Succeess'
+      redirect_to :root, notice: 'Succeess'
     else
-      redirect to: root_path, notice: 'Failure'
+      render :new
     end
   end
 
@@ -26,7 +27,7 @@ class TicketsController < ApplicationController
 
   private
     def ticket_params
-      params.require(:ticket).permit(:name, :phone, :pick_up_latlon, :drop_off_latlon, :pick_up_time)
+      params.require(:ticket).permit(:name, :phone, :pick_up_latlon, :drop_off_latlon, :pick_up_time, :pick_up_location, :drop_off_location)
     end
 
 

@@ -8,17 +8,31 @@ $ ->
       $.getJSON "http://geocode-maps.yandex.ru/1.x/?format=json&geocode=Санкт-Петербург" + query, (data) ->
         window.geo_coded = _.object(_.map data.response.GeoObjectCollection.featureMember, (object) -> [object.GeoObject.name, object.GeoObject.boundedBy.Envelope.lowerCorner])
         res = _.map data.response.GeoObjectCollection.featureMember, (object) -> object.GeoObject.name
-        # console.log data.response.GeoObjectCollection.featureMember
         cb(res)
     updater: (item) ->
       window.geo = window.geo_coded[item]
+      if /pick_up/.test(@.$element[0].id)
+        $('#ticket_pick_up_latlon').val(window.geo)
+      else
+        $('#ticket_drop_off_latlon').val(window.geo)
+
       $('#submit_ticket_form').removeAttr('disabled')
       item
 
   }
   
-  date_picker = $('#pickup_date').pickadate()
-  time_picker = $('#pickup_time').pickatime()
+  date_picker = $('#pickup_date').pickadate {
+    onStart: ->
+      date = new Date()
+      this.set('select', [date.getFullYear(), date.getMonth(), date.getDate()]);
+  }
+
+  time_picker = $('#pickup_time').pickatime {
+    interval: 15,
+    onStart: ->
+      date = new Date()
+      this.set('select', [date.getHours(), date.getMinutes()]);
+  }
   date = date_picker.pickadate('picker')
   time = time_picker.pickatime('picker')
 
