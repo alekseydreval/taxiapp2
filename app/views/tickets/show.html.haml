@@ -1,0 +1,67 @@
+#C1.span6
+  .inner-container-fluid
+    #driver_show.tickets-list
+      .left-panel
+        .panel.panel-default.panel-tickets-show-info
+          .panel-heading
+            %h5.panel-title
+              Информация
+          .panel-body-compact
+            .well.well-compact.well-compact-no-border
+              .pull-right
+                %b
+                  = @ticket.formatted_time
+              %div
+                Имя клиента:
+                %b
+                  = @ticket.name
+              %div
+                Адрес отправления:
+                %b
+                  = @ticket.pick_up_location
+              %div
+                Адрес прибытия:
+                %b
+                  = @ticket.drop_off_location
+              %div
+                Контактный номер:
+                %b
+                  = @ticket.phone
+              - if @ticket.note
+                %div
+                  Заметки:
+                  = @ticket.note
+  .inner-container-fluid
+    #driver_show.tickets-list
+      .left-panel
+        .panel.panel-default.panel-tickets-show-assign
+          .panel-heading
+            %h5.panel-title
+              Назначить водителя | Информация о поездке
+          .panel-body-compact
+            .well.well-compact.well-compact-no-border
+              - if @ticket.driver
+                Информация об идущей поездке
+              - elsif @ticket.suggestions.present?
+                Предложено водителям:
+                - for suggestion in @ticket.suggestions
+                  %div
+                    = suggestion.driver.username
+              - else
+                .well.well-small 
+                  Поездка не предложена. Выберите водителя на карте или из списка, чтобы предложить поездку
+                = simple_form_for [@ticket, Suggestion.new] do |f|
+                  = f.association :driver, collection: User.where("users.role = 'driver'"), as: :select, label_method: :username, label: false
+                  = f.hidden_field :ticket_id, value: @ticket.id
+                  = f.submit 'Разослать предложение', class: 'btn btn-primary'
+
+#C1.span6
+  .inner-container-fluid
+    #driver_show.tickets-list
+      .right-panel
+        .panel.panel-default{style: "margin-bottom: 70px;"}
+          .panel-heading
+            %h5.panel-title
+              Водители
+          .panel-body-compact.panel-full-height
+            = map(:center => {:latlng => [51.52238797921441, -0.08366235665359283],:zoom => 18})

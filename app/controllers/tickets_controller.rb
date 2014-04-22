@@ -12,7 +12,7 @@ class TicketsController < InheritedResources::Base
   private
     def permitted_params
       params.permit(ticket: [:name, :phone, :pick_up_latlon, :drop_off_latlon, 
-                             :pick_up_time, :pick_up_location, :drop_off_location, :note])
+                             :pick_up_time, :pick_up_location, :drop_off_location, :note, :driver_ids])
     end
 
 end

@@ -23,22 +23,31 @@ $ ->
   
   date_picker = $('#pickup_date').pickadate {
     onStart: ->
-      date = new Date()
-      this.set('select', [date.getFullYear(), date.getMonth(), date.getDate()]);
+      if pick_up_time = $('#ticket_pick_up_time').val()
+        date = pick_up_time.replace('T', ' ').split(' ')[0]
+        this.set('select', date, { format : 'yyyy-mm-dd' });
+      else
+        date = new Date()
+        this.set('select', [date.getFullYear(), date.getMonth(), date.getDate()]);
   }
 
   time_picker = $('#pickup_time').pickatime {
     interval: 15,
     onStart: ->
-      date = new Date()
-      this.set('select', [date.getHours(), date.getMinutes()]);
+      if pick_up_time = $('#ticket_pick_up_time').val()
+        time = pick_up_time.replace('T', ' ').split(' ')[1]
+        this.set('select', [time.split(':')[0], time.split(':')[1]])
+      else
+        date = new Date()
+        this.set('select', [date.getHours(), date.getMinutes()])
+    format: 'HH:i'
   }
+
   date = date_picker.pickadate('picker')
   time = time_picker.pickatime('picker')
 
   $('#submit_ticket_form').click ->
     date_time = date.get('select', 'yyyy/mm/dd') + ' ' + time.get('select', 'hh:i')
     $('#ticket_pick_up_time').val(date_time)
-    $('#new_ticket').submit()
-
-  
+    $('#ticket_form').submit()
+    console.log 'sdfjhgsdgfhsdghjfgshjkdfhjsdfghjsdfgghjsdfghjsdfghjvdfsghjdfsghj'

@@ -29,6 +29,7 @@ gem 'font-awesome-rails'
 gem 'haml'
 gem 'simple_form'
 gem 'russian'
+gem 'leaflet-rails'
 
 gem 'inherited_resources'
 gem 'responders'

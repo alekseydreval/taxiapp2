@@ -13,6 +13,7 @@
  *= require pickadate/default
  *= require pickadate/default.date
  *= require pickadate/default.time
+ *= require leaflet
  *= require_tree .
  *= require font-awesome
  */
@@ -26,7 +27,7 @@
 
 #map
 {
- height: 500px;
+ height: 605px;
 }
 #pdf_ignore {
   display: none;
@@ -118,4 +119,24 @@ nav * {
 .tickets_action_button {
   width: 120px;
   margin-top: 10px;
+}
+
+.left-panel {
+  margin-right: 5px;
+}
+
+.right-panel {
+  margin-left: 5px;
+}
+
+.panel-full-height { 
+  height: 600px;
+}
+
+.panel-tickets-show-info {
+  height: 250px;
+}
+
+.panel-tickets-show-assign {
+  height: 350px;
 }
