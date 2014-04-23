@@ -1,0 +1,124 @@
+class TaxiApp.Map
+
+  # Show map after initializtion
+  constructor: ->
+    @markerColors = ['red', 'darkened', 'orange', 'green', 'darkgreen',
+                     'blue', 'darkblue', 'purple', 'darkpurple', 'cadetblue']
+    @driverMarkers = []
+    @allDrivers = L.layerGroup()
+    @currentDriver = L.layerGroup()
+    @map = window.map
+    @map.addLayer @currentDriver
+
+    # Not sure about these lines
+    # base = "Base" : baseLayer
+    # overlays =
+    #   "All drivers" : @allDrivers
+
+    # @layersControl = L.control.layers(base).addTo @map
+
+    @map.setView(new L.LatLng(0, 0), 17)
+    @map
+
+  updateDriversListAndPositions: (obj) =>
+    @updateDriversPositions(obj)
+    $('#drivers_online').html JST["drivers_list"](positions : obj.positions)
+
+  updateDriversPositions: (obj) =>
+    console.log 'updating map'
+    console.log obj.positions
+    
+    if obj.positions && obj.positions.length
+
+      if $('.assigned_driver').length
+        id = eval($('.assigned_driver').attr('data-driver'))
+        obj.positions = _.reject obj.positions, (pos) =>
+          parseInt(pos.driver_id, 10) == id && @_moveOrAddPosition(pos, 'red') && true
+      else if $('.suggested_drivers').length
+        ids = eval($('.suggested_drivers').attr('data-drivers'))
+        obj.positions = _.reject obj.positions, (pos) =>
+          _.contains(ids, parseInt(pos.driver_id)) && @_moveOrAddPosition(pos, 'orange') && true
+      
+      for position in obj.positions
+        @_moveOrAddPosition(position, 'blue')
+
+      @map.setView [60.00709637490654, 30.412645339965817], 13
+
+  showDriverEndpoints: ->
+    if $("#map").attr('data-positions')
+      bounds = []
+      positions = $("#map").data('positions').slice()
+      if $("#map").attr('current')
+        positions.push $("#map").data('current')
+      @currentDriver.clearLayers()
+      for pos in positions
+        marker = @createMarker(pos['latlng'])
+        bounds.push pos['latlng']
+        marker.bindPopup pos['type']
+        @currentDriver.addLayer marker
+
+  showCurrentLocationRealTime: ->
+    TaxiApp.Utils.getMyCoords (latlng) =>
+      current = { latlng: [ latlng[0], latlng[1] ], type: 'current' }
+      $('#map').data('current', current)
+      bounds = []
+      if $("#map").attr('data-positions')
+        positions = $("#map").data('positions').slice()
+      else
+        $("#map").data('positions', [])
+        positions = $("#map").data('positions')
+      positions.push current
+      @currentDriver.clearLayers()
+      for pos in positions
+        marker = @createMarker(pos['latlng'])
+        bounds.push pos['latlng']
+        marker.bindPopup pos['type']
+        @currentDriver.addLayer marker
+      @fitBoundsToMarkers()
+    , watch : true
+
+  fitBoundsToMarkers: ->
+    bounds = []
+    markers = @currentDriver.eachLayer (layer) ->
+      bounds.push layer.getLatLng()
+    @map.fitBounds bounds
+
+  addMarkerAndSetView: (callback) ->
+    TaxiApp.Utils.getMyCoords (latlng) =>
+      @map.setView latlng, 14
+      marker = @createMarker(latlng)
+      @currentDriver.addLayer marker
+      callback(latlng) if callback
+
+
+  ####################
+  # Internal methods #
+  ####################
+
+  createMarker: (latlng, color) ->
+    taxi_icon = L.AwesomeMarkers.icon(
+      markerColor: color,
+    )
+    marker = L.marker( latlng, icon: taxi_icon ).addTo(@map)
+
+  checkAndCollectData: (names) ->
+    names = [names] unless names instanceof Array
+    data = {}
+    for name in names
+      return unless val = $("#map").data(name)
+      data[name] = val
+    data
+
+  _colorForDriver: (id) ->
+    color = @markerColors[id % (@markerColors.length-1)]
+    console.log id, color
+    color
+
+  _moveOrAddPosition: (position, color = 'blue') ->
+    id = position.driver_id
+    if !@driverMarkers[id]
+      @driverMarkers[id] = @createMarker position.latlng, color
+      @allDrivers.addLayer @driverMarkers[id]
+      # @layersControl.addOverlay @driverMarkers[id], "Driver #{id}"
+    else
+      @driverMarkers[id].setLatLng(position.latlng)

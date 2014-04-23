@@ -1,0 +1,9 @@
+.panel.panel-default
+  .panel-heading
+    %h5.panel-title
+      Message
+  .panel-body
+    = text_area_tag :messages, "", rows: "10", class: "span12"
+  .panel-footer
+    = text_field_tag "message", nil, placeholder: "Message", id: "new_message"
+    = link_to_function "Send", 'send_message()', class: "btn btn-primary"

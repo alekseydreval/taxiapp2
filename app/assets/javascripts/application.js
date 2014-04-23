@@ -18,4 +18,7 @@
 //= require pickadate/picker.date 
 //= require pickadate/picker.time
 //= require leaflet
+//= require websocket_rails/main
+//= require hamlcoffee
+//= require ./leaflet.awesome-markers
 //= require_tree .

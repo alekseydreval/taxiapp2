@@ -7,7 +7,7 @@
     = csrf_meta_tags
     /[if lt IE 9]
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-  %body
+  %body{ "data-user-type" => "#{current_user ? current_user.role : nil}", "data-user" => "#{current_user ? current_user.id : nil}", "page" => "#{controller.controller_name}##{controller.action_name}" }
     - if current_user
       %header.navbar.navbar-fixed-top.navbar-inverse{:style => "allign: center; "}
         .navbar-inner

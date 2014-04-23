@@ -1,0 +1,15 @@
+.panel.panel-default
+  .panel-heading
+    %h5.panel-title
+      New Suggestion
+  .panel-body
+    %div Pickup address:
+    %div
+      =@pickup
+    %div Dropoff address:
+    %div
+      =@dropoff
+  .panel-footer
+    %a.btn{"data-method" => "post", :href => "/suggestions/#{@id}/make_decision?decision=accept", :rel => "nofollow"} Accept
+    %a.btn{"data-method" => "post", :href => "/suggestions/#{@id}/make_decision?decision=decline", :rel => "nofollow"} Decline
+    %a.pull-right.btn{:href => "/tickets/#{@ticket_id}", :rel => "nofollow"} Details

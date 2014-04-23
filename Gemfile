@@ -35,6 +35,8 @@ gem 'inherited_resources'
 gem 'responders'
 
 gem 'quiet_assets'
+gem 'websocket-rails'
+gem 'haml_coffee_assets'
 
 gem 'devise'
 gem 'cancan'

@@ -1,0 +1,10 @@
+%ul
+  - for driver in @positions
+    %li 
+      Driver:
+      = driver.driver_info.firstname
+      = driver.driver_info.lastname
+      with car:
+      = driver.driver_info.session.car.model
+      %a{ href: "/users/#{driver.driver_info.id}"}
+        Details

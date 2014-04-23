@@ -41,19 +41,26 @@
           .panel-body-compact
             .well.well-compact.well-compact-no-border
               - if @ticket.driver
-                Информация об идущей поездке
-              - elsif @ticket.suggestions.present?
-                Предложено водителям:
-                - for suggestion in @ticket.suggestions
-                  %div
-                    = suggestion.driver.username
+                %span.assigned_driver{"data-driver" => "#{@ticket.driver.id}"}
+                  Информация об идущей поездке
               - else
-                .well.well-small 
-                  Поездка не предложена. Выберите водителя на карте или из списка, чтобы предложить поездку
+                - if @ticket.suggestions.present?
+                  %span.suggested_drivers{"data-drivers" => "#{@ticket.suggestions.map {|s| s.driver.id}}"}
+                    Предложено водителям:
+                  .well.well-small
+                    %ul
+                      - for suggestion in @ticket.suggestions
+                        %li
+                          = suggestion.driver.username
+                - else
+                  .well.well-small 
+                    Поездка не предложена. Выберите водителя на карте или из списка, чтобы предложить поездку
                 = simple_form_for [@ticket, Suggestion.new] do |f|
-                  = f.association :driver, collection: User.where("users.role = 'driver'"), as: :select, label_method: :username, label: false
-                  = f.hidden_field :ticket_id, value: @ticket.id
-                  = f.submit 'Разослать предложение', class: 'btn btn-primary'
+                  - possible_suggestions = User.where("users.role = 'driver'") - @ticket.suggestions.map(&:driver)
+                  - if possible_suggestions.present?
+                    = f.association :driver, collection: possible_suggestions, as: :select, label_method: :username, label: false, include_blank: "<Предложить еще>"
+                    = f.hidden_field :ticket_id, value: @ticket.id
+                    = f.submit 'Разослать предложение', class: 'btn btn-primary'
 
 #C1.span6
   .inner-container-fluid
@@ -64,4 +71,4 @@
             %h5.panel-title
               Водители
           .panel-body-compact.panel-full-height
-            = map(:center => {:latlng => [51.52238797921441, -0.08366235665359283],:zoom => 18})
+            = map(:center => {:latlng => [60.00709637490654, 30.412645339965817],:zoom => 13})
