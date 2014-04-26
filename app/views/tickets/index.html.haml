@@ -5,7 +5,7 @@
         .panel.panel-default{style: "margin-bottom: 70px;"}
           .panel-heading
             %h5.panel-title
-              Неназначенные поездки
+              = @title
           .panel-body-compact
             - for ticket in @tickets
               .well.well-compact
@@ -38,4 +38,5 @@
                   %div
                     Заметки:
                     = ticket.note
-                %a.btn.btn-jumbo{"data-method" => "patch", "data-push" => "true", "data-target" => "div.inner-container-fluid", href: "/tickets/305/start", rel: "nofollow"} Предложить
+                - if can?(:start, ticket) 
+                  = button_to "Начать", start_ticket_path(ticket), class: 'btn'

@@ -19,6 +19,17 @@ class TaxiApp.NotificationsListener
                      when 'dispatcher' then 'drivers_locations'
 
     @connection = new WebSocketRails("#{document.location.host}/websocket")
+
+    if channel == 'dispatcher'
+      @suggestionResponseChannel = @connection.subscribe "dispatcher_#{$('body').attr('data-user')}"
+      @suggestionResponseChannel.bind 'update', (response) ->
+        console.log 'Got suggestion response'
+        msg_type = if response.answer == 'accepted' then 'info' else 'warning'
+        $.notify(response.text, {autoHide: false, className: msg_type })
+        $(document).on "click", ".notifyjs-bootstrap-base", ->
+          location.href = "#{location.protocol}//#{location.host}/tickets/#{response.ticket.id}"
+
+
     window.connection = @connection
     console.log @connection
     console.log channel_name, channel
@@ -27,7 +38,7 @@ class TaxiApp.NotificationsListener
     obj = {}
     obj.user_id = $('body').attr('data-user')
     @connection.trigger "chat.set_connection_id", obj
-    unless $('body').attr('page') != 'navigation' and @role == 'driver'
+    if $('#map').length
       @map = new TaxiApp.Map
     @subscribeToNewMessage()
 
@@ -60,25 +71,17 @@ class TaxiApp.NotificationsListener
     if @role == 'driver'
       @subscribeAllForDriver()
     else
-      @getDriversLocations()
-      @subscribeToDriversLocationsUpdates()
+      if @map
+        @getDriversLocations()
+        @subscribeToDriversLocationsUpdates()
 
   subscribeToNewSuggestion: () ->
     @channel.bind 'new', (obj) ->
       console.log 'Got new suggestion'
-      suggestion = obj.suggestion
       ticket = obj.ticket
-      $("#C1R1").html JST["new_suggestion"](id : suggestion.id, pickup : ticket.pickup_address, dropoff :  ticket.dropoff_address, ticket_id : ticket.id)
-      if $("#map").attr('data-positions')
-        positions = $("#map").data('positions').slice()
-      for pos in positions
-        if pos.type == "start"
-          pos.latlng = [ ticket.start_geolat, ticket.start_geolong]
-        if pos.type == "stop"
-          pos.latlng = [ ticket.stop_geolat, ticket.stop_geolong]
-      @taxiMap.showDriverEndpoints()
-      @taxiMap.showCurrentLocationRealTime()
-      @taxiMap.fitBoundsToMarkers()
+      $.notify('Поступило предложение о поездке', {autoHide: false, className: 'info'})
+      $(document).on "click", ".notifyjs-bootstrap-base", ->
+        location.href = "#{location.protocol}//#{location.host}/tickets/#{ticket.id}"
     console.log 'listening to new suggestions'
 
   subscribeToTicketUpdate: () ->
@@ -104,10 +107,11 @@ class TaxiApp.NotificationsListener
 
 
 $ ->
-  role = if $('body').attr('data-user-type') == 'driver' then 'driver' else 'dispatcher'
-  page = $('body').attr('page')
-  if role != 'dispatcher' || (role == 'dispatcher' && page == 'tickets#show')
+  ymaps.ready ->
+    role = if $('body').attr('data-user-type') == 'driver' then 'driver' else 'dispatcher'
+    page = $('body').attr('page')
+    # if role != 'dispatcher' || (role == 'dispatcher' && page == 'tickets#show')
     listener = new TaxiApp.NotificationsListener(role)
     listener.subscribeAll()
-  else
-    console.log "This page does not require any socket connection"
+    # else
+      # console.log "This page does not require any socket connection"

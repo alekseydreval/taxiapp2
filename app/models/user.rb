@@ -1,5 +1,6 @@
 class User < ActiveRecord::Base
-
+  
+  # For dispatcher
   has_many :suggestions
   has_many :tickets, through: :suggestions
 
@@ -34,6 +35,10 @@ class User < ActiveRecord::Base
 
   def login
     @login || self.username || self.email
+  end
+
+  def current_ticket
+    self.tickets.with_state(:started).first
   end
 
 

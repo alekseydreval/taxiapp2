@@ -20,5 +20,5 @@
 //= require leaflet
 //= require websocket_rails/main
 //= require hamlcoffee
-//= require ./leaflet.awesome-markers
+//= require ./notify.js
 //= require_tree .

@@ -1,0 +1,22 @@
+.panel.panel-default.panel-tickets-show-assign
+  .panel-heading
+    %h5.panel-title
+      - if @ticket.driver
+        Информация о поездке
+      - else
+        Принять/отколнить
+  .panel-body-compact
+    .well.well-compact.well-compact-no-border
+      - if can?(:start, @ticket)
+        = button_to "Начать", start_ticket_path(@ticket), class: "btn btn-large btn-primary"
+      - elsif can?(:finish, @ticket)
+        %button.btn.btn-large.btn-primary Заершить
+      - elsif can?(:take, @ticket)
+        = button_to "Принять", take_ticket_path, class: "btn btn-large btn-primary"
+        = button_to "Отклонить", reject_ticket_path, class: "btn btn-large btn-danger"
+      - else
+        Выполняется
+        - if @ticket.driver == current_user
+          Вами
+        - else
+          другим водителем

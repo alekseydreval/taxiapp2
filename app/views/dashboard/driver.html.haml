@@ -1,11 +1,69 @@
+- @ticket = current_user.current_ticket
 .row-fluid
   #C1.span12
     .inner-container-fluid
-      .wiselinks-current-page{"data-page" => "users#show"}
-      #driver_show.tickets-list{"data-ticket-reload-path" => "/users/2"}
+      #driver_show.tickets-list
         #ride
           .panel.panel-default
-            .panel-heading
-              %h5.panel-title
-                = "#{current_user.login} - запланированные поездки"
-            .panel-body-compact.fixed-height-380
+            - if @ticket
+              .panel-heading{style: 'height: 45px;'}
+                .pull-right
+                  %button.btn.btn-large{"data-toggle" => "modal", href: "#newModal"} Добавить Расходы
+                  %button.btn.btn-large.btn-success{"data-toggle" => "modal", href: "#finishModal"} Заершить
+                %h5.panel-title
+                  = "#{current_user.username} - текущая поездка"
+              #map.panel-body-compact.fixed-height-380
+                :javascript
+                  ymaps.ready(function(){
+                    window.map = new ymaps.Map("map",  { center: [55.76, 37.64], zoom: 7 });
+                    var route = ["#{@ticket.pick_up_location}", "#{@ticket.drop_off_location}"];
+                    window.map.setBounds(#{ @ticket.formatted_route})
+                    ymaps.route(route).then(
+                      function (route) {
+                        map.geoObjects.add(route);
+                      },
+                      function (error) {
+                        alert('Возникла ошибка: ' + error.message);
+                      }
+                    );
+                    var marker = null;
+                    TaxiApp.Utils.getMyCoords(function(latlng) {
+                      if(!marker) {
+                        marker = new ymaps.Placemark(latlng, { content: 'Мое местоположение' }, { preset: "twirl#redIcon" });
+                        window.map.geoObjects.add(marker);
+                      } else {
+                        marker.editor.geometry.setCoordinates(latlng);
+                      }
+                    }, { watch: true });
+                  })
+            - else
+              .hero-unit
+                = content_tag 'h2' do 
+                  = "Нет активной поездки"
+                  - if current_user.tickets.scheduled.present?
+                    = link_to "Начните одну из запланированых", scheduled_tickets_path
+
+#newModal.modal.hide.fade{"aria-hidden" => "false", "aria-labelledby" => "headerText", role: "dialog", style: "display: block;", tabindex: "-1"}
+  .modal-header
+    %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", type: "button"} ×
+    %h3#headerText Добавить расходы
+  - dst = current_user.current_ticket.present? ? [current_user.current_ticket, Expense.new] : Expense.new
+  = simple_form_for dst, { input_html: { id: 'new_expense', class: 'new_expense' } } do |f|
+    .modal-body
+      = f.input :amount, label: 'Размер'
+      = f.select :expenses_type, ['Заправка', 'Мойка', 'Тех. обслуживание']
+    .modal-footer
+      = f.submit 'Добавить',  { class: 'btn' }
+
+#finishModal.modal.hide.fade{"aria-hidden" => "false", "aria-labelledby" => "headerText", role: "dialog", style: "display: block;", tabindex: "-1"}
+  .modal-header
+    %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", type: "button"} ×
+    %h3#headerText Завершить поездку
+  - if @ticket
+    = simple_form_for @ticket, { url: finish_ticket_path(@ticket), method: "post", input_html: { id: '1' } }  do |f|
+      .modal-body
+        = f.input :payment_amount, label: 'Размер оплаты', required: true
+        = f.select :payment_method, ['Наличными', 'Кредитная карта'], label: 'Способ оплаты'
+        = f.input :payment_tip, label: 'Чаевые'
+      .modal-footer
+        = f.submit 'Завершить', { class: 'btn btn-primary' }

@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ticket_id: 1
+  driver_id: 
+  type: 
+  amount: 1
+
+two:
+  ticket_id: 1
+  driver_id: 
+  type: 
+  amount: 1

@@ -6,9 +6,20 @@ class Ability
 
     case user.role
     when 'dispatcher'
-      can :manage, :all
+      can [:read, :update, :delete], Ticket
     when 'driver'
-      can :manage, :all
+      can [:update, :delete], Ticket, driver_id: user.id
+      can :read, Ticket
+      can :take, Ticket do |ticket|
+        ticket.state == "unassigned" and
+        ticket.suggestions.any? { |s| s.user_id == user.id }
+      end
+      can :start, Ticket do |ticket|
+        ticket.driver_id = user.id and
+        ticket.state == "taken" and
+        ticket.driver.tickets.with_state(:started).empty?
+      end
+      can :finish, Ticket, state: :started, driver_id: user.id
     when 'admin'
       can :manage, :all
     end

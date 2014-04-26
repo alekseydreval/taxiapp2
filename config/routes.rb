@@ -1,8 +1,20 @@
 Taxiapp2::Application.routes.draw do
   devise_for :users
 
+  resources :expenses
   resources :tickets do
+    member do
+      post "take"
+      post "reject"
+      post "start"
+      post "finish"
+    end
+    collection do
+      get "scheduled"
+      get "suggested"
+    end
     resources :suggestions
+    resources :expenses
   end
 
   # The priority is based upon order of creation: first created -> highest priority.

@@ -5,19 +5,7 @@ class TaxiApp.Map
     @markerColors = ['red', 'darkened', 'orange', 'green', 'darkgreen',
                      'blue', 'darkblue', 'purple', 'darkpurple', 'cadetblue']
     @driverMarkers = []
-    @allDrivers = L.layerGroup()
-    @currentDriver = L.layerGroup()
     @map = window.map
-    @map.addLayer @currentDriver
-
-    # Not sure about these lines
-    # base = "Base" : baseLayer
-    # overlays =
-    #   "All drivers" : @allDrivers
-
-    # @layersControl = L.control.layers(base).addTo @map
-
-    @map.setView(new L.LatLng(0, 0), 17)
     @map
 
   updateDriversListAndPositions: (obj) =>
@@ -26,23 +14,21 @@ class TaxiApp.Map
 
   updateDriversPositions: (obj) =>
     console.log 'updating map'
-    console.log obj.positions
     
-    if obj.positions && obj.positions.length
+    if obj && obj.positions && obj.positions.length
+      console.log obj.positions
 
       if $('.assigned_driver').length
         id = eval($('.assigned_driver').attr('data-driver'))
         obj.positions = _.reject obj.positions, (pos) =>
-          parseInt(pos.driver_id, 10) == id && @_moveOrAddPosition(pos, 'red') && true
+          parseInt(pos.driver_id, 10) == id && @_moveOrAddDriver(pos, 'green') && true
       else if $('.suggested_drivers').length
         ids = eval($('.suggested_drivers').attr('data-drivers'))
         obj.positions = _.reject obj.positions, (pos) =>
-          _.contains(ids, parseInt(pos.driver_id)) && @_moveOrAddPosition(pos, 'orange') && true
+          _.contains(ids, parseInt(pos.driver_id)) && @_moveOrAddDriver(pos, 'darkorange') && true
       
       for position in obj.positions
-        @_moveOrAddPosition(position, 'blue')
-
-      @map.setView [60.00709637490654, 30.412645339965817], 13
+        @_moveOrAddDriver(position, 'blue')
 
   showDriverEndpoints: ->
     if $("#map").attr('data-positions')
@@ -95,11 +81,11 @@ class TaxiApp.Map
   # Internal methods #
   ####################
 
-  createMarker: (latlng, color) ->
-    taxi_icon = L.AwesomeMarkers.icon(
-      markerColor: color,
-    )
-    marker = L.marker( latlng, icon: taxi_icon ).addTo(@map)
+  createMarker: (driver, color) ->
+    marker = new ymaps.Placemark(driver.latlng, { hintContent: driver.username, balloonContent: driver.username },
+                                 { preset: "twirl##{color}Icon" })
+    window.map.geoObjects.add(marker)
+    marker
 
   checkAndCollectData: (names) ->
     names = [names] unless names instanceof Array
@@ -114,11 +100,11 @@ class TaxiApp.Map
     console.log id, color
     color
 
-  _moveOrAddPosition: (position, color = 'blue') ->
-    id = position.driver_id
+  _moveOrAddDriver: (driver, color = 'blue') ->
+    id = driver.driver_id
     if !@driverMarkers[id]
-      @driverMarkers[id] = @createMarker position.latlng, color
-      @allDrivers.addLayer @driverMarkers[id]
+      @driverMarkers[id] = @createMarker driver, color
+      # @allDrivers.addLayer @driverMarkers[id]
       # @layersControl.addOverlay @driverMarkers[id], "Driver #{id}"
     else
-      @driverMarkers[id].setLatLng(position.latlng)
+      @driverMarkers[id].editor.geometry.setCoordinates(driver.latlng)
