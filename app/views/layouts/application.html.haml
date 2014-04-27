@@ -14,23 +14,11 @@
         .navbar-inner
           .container
             %nav
-              %ul#statistics.nav.nav-justified.enlarged.pull-left
+              %ul#statistics.nav.nav-justified.enlarged.pull-left{ style: "float: left;" }
                 %li
                   %a{:href => "/users/2"}
                     %span.main_icon
                       = current_user.login
-                %li
-                  %a{:href => "/users/2"}
-                    %span.ride_icon
-                    | 0
-                %li
-                  %a{:href => "/reports/new"}
-                    %span.fare_icon
-                    | $0.0
-                %li
-                  %a{:href => "/reports/new"}
-                    %span.tips_icon
-                    | $0.0
               .login_new.pull-right{"style" => "margin-top: 10px;"}
                 = link_to "Заершить работу", destroy_user_session_path, "style" => "color : #999999;", :method => :delete
             
@@ -46,15 +34,14 @@
           / Place the new expense modal outside the nav div to show it properly
           / end
           .custom
+
     - if current_user
       .navbar.navbar-fixed-bottom.navbar-inverse{:style => ""}
         .navbar-inner
           .container
             %nav
               %ul.nav
-                %li
-                  = link_to "Предложенные поездки", controller: "dashboard", action: "show"
-                %li
-                  %a{:href => "/tickets/scheduled"} Изменить статус
-                %li
-                  %a{:href => "/tickets/open_queue"} Добавить расходы
+                - if current_user.role == 'driver'
+                  = render partial: 'shared/driver_bar', locals: { driver: current_user }
+                - else
+                  = render partial: 'shared/dispatcher_bar', locals: { dispatcher: current_user }

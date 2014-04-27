@@ -12,14 +12,18 @@ class Ability
       can :read, Ticket
       can :take, Ticket do |ticket|
         ticket.state == "unassigned" and
-        ticket.suggestions.any? { |s| s.user_id == user.id }
+        ticket.suggestions.any? { |s| s.user_id == user.id } and
+        !ticket.suggestions.where("user_id = ?", user.id).all?(&:rejected?)
       end
       can :start, Ticket do |ticket|
         ticket.driver_id = user.id and
         ticket.state == "taken" and
         ticket.driver.tickets.with_state(:started).empty?
       end
-      can :finish, Ticket, state: :started, driver_id: user.id
+      can :finish, Ticket, state: "started", driver_id: user.id
+      if !user.current_ticket
+        can :take_a_brake
+      end
     when 'admin'
       can :manage, :all
     end

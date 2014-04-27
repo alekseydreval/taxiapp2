@@ -1,0 +1,39 @@
+%li
+  = link_to "Текущая поездка", root_path
+%li
+  = link_to "Предложенные", suggested_tickets_path
+%li
+  = link_to "Запланированные", scheduled_tickets_path
+%li
+  %a{"data-toggle" => "modal", href: "#newModal"} Добавить расходы
+%li
+  - if current_user.normal?
+    = link_to "Перерыв", take_a_brake_user_path(current_user)
+  - else
+    = link_to "Продолжить", continue_user_path(current_user) 
+  %a{:href => "/tickets/scheduled"} 
+
+#newModal.modal.hide.fade{"aria-hidden" => "false", "aria-labelledby" => "headerText", role: "dialog", style: "display: block;", tabindex: "-1"}
+  .modal-header
+    %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", type: "button"} ×
+    %h3#headerText Добавить расходы
+  - dst = current_user.current_ticket.present? ? [current_user.current_ticket, Expense.new] : Expense.new
+  = simple_form_for dst, { input_html: { id: 'new_expense', class: 'new_expense' } } do |f|
+    .modal-body
+      = f.input :amount, label: 'Размер'
+      = f.select :expenses_type, ['Заправка', 'Мойка', 'Тех. обслуживание']
+    .modal-footer
+      = f.submit 'Добавить',  { class: 'btn' }
+
+#finishModal.modal.hide.fade{"aria-hidden" => "false", "aria-labelledby" => "headerText", role: "dialog", style: "display: block;", tabindex: "-1"}
+  .modal-header
+    %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", type: "button"} ×
+    %h3#headerText Завершить поездку
+  - if @ticket
+    = simple_form_for @ticket, { url: finish_ticket_path(@ticket), method: "post", input_html: { id: '1' } }  do |f|
+      .modal-body
+        = f.input :payment_amount, label: 'Размер оплаты', required: true
+        = f.select :payment_method, ['Наличными', 'Кредитная карта'], label: 'Способ оплаты'
+        = f.input :payment_tip, label: 'Чаевые'
+      .modal-footer
+        = f.submit 'Завершить', { class: 'btn btn-primary' }

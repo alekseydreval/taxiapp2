@@ -7,10 +7,9 @@ class Ticket < ActiveRecord::Base
   accepts_nested_attributes_for :suggestions
 
   validates_presence_of :name, :phone, :pick_up_time, :pick_up_latlon, :drop_off_latlon,
-                                                      :pick_up_location, :drop_off_location
+                                                      :pick_up_location, :drop_off_location, :dispatcher_id
   validates_numericality_of :payment_tip, :payment_amount, allow_nil: true
   validates_format_of :phone, with: /\+?\d+/
-  validates_associated :dispatcher
 
   scope :scheduled, -> { where("driver_id IS NOT NULL and tickets.state = 'taken'") }
   scope :unscheduled, -> { where("driver_id IS NULL") }
@@ -48,7 +47,7 @@ class Ticket < ActiveRecord::Base
   end
 
   def reject_by(user)
-    self.suggestions.where("user_id = ?", user.id).delete_all
+    self.suggestions.without_state(:rejected).where("user_id = ?", user.id).first.reject
     WebsocketRails["dispatcher_#{self.dispatcher_id}"].trigger 'update', { ticket: self, answer: 'rejected', text: 'Предложение было отклонено' }
   end
 

@@ -1,23 +1,13 @@
 = simple_form_for ticket, html: { id: 'ticket_form' } do |f|
   .span6.new_ticket
-    = f.input :name, id: 'ticket_client_name', input_html: { class: 'input-block-level input-large'}, placeholder: "Имя клиента", label: false
-    = f.input :phone, input_html: {class: 'input-block-level input-large', placeholder: "Телефон"}, label: false
-    = f.input :pick_up_location, input_html: { class: 'address-picker input-large input-block-level' , placeholder: "Адрес подачи"}, label: false
-    %a.btn.btn-default{type: "button", style: "margin-bottom: 10px;"}
-      .btn-centred-content
-        %i.icon-globe
-        Мое местоположение
-    %br
-    = f.input :drop_off_location, input_html: { class: 'address-picker input-large input-block-level' }, placeholder: "Адрес назначения", label: false
+    = f.input :name, id: 'ticket_client_name', input_html: { class: 'input-block-level input-large', autocomplete: 'off'}, placeholder: "Имя клиента", label: false
+    = f.input :phone, input_html: {class: 'input-block-level input-large', placeholder: "Телефон", autocomplete: 'off'}, label: false
+    = f.input :pick_up_location, input_html: { class: 'address-picker input-large input-block-level' , placeholder: "Адрес подачи", autocomplete: 'off'}, label: false
+    = f.input :drop_off_location, input_html: { class: 'address-picker input-large input-block-level', autocomplete: 'off' }, placeholder: "Адрес назначения", label: false
     = f.hidden_field :pick_up_time
     = f.hidden_field :pick_up_latlon
     = f.hidden_field :drop_off_latlon
     = f.hidden_field :dispatcher_id, value: current_user.id
-    %a.btn.btn-default{type: "button", style: "margin-bottom: 10px;"}
-      .btn-centred-content
-        %i.icon-globe
-        Мое местоположение
-    %br
     #showSuggestionsModal.modal.hide.fade{"aria-hidden" => "true", "aria-labelledby" => "headerText", :role => "dialog", :style => "display: none;", :tabindex => "-1"}
       .modal-header
         %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×

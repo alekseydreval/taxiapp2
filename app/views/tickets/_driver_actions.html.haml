@@ -2,7 +2,7 @@
   .panel-heading
     %h5.panel-title
       - if @ticket.driver
-        Информация о поездке
+        Статус поездки
       - else
         Принять/отколнить
   .panel-body-compact
@@ -10,10 +10,12 @@
       - if can?(:start, @ticket)
         = button_to "Начать", start_ticket_path(@ticket), class: "btn btn-large btn-primary"
       - elsif can?(:finish, @ticket)
-        %button.btn.btn-large.btn-primary Заершить
+        %button.btn.btn-large.btn-primary{"data-toggle" => "modal", href: "#finishModal"} Заершить
       - elsif can?(:take, @ticket)
         = button_to "Принять", take_ticket_path, class: "btn btn-large btn-primary"
         = button_to "Отклонить", reject_ticket_path, class: "btn btn-large btn-danger"
+      - elsif @ticket.suggestions.find{|sg| sg.rejected? }
+        Отклонено
       - else
         Выполняется
         - if @ticket.driver == current_user

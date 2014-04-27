@@ -35,7 +35,7 @@
     #driver_show.tickets-list
       .left-panel
         - if current_user.role == 'dispatcher'
-          = render partial: "assign_driver", locals: { ticket: @ticket }
+          = render partial: "dispatcher_actions", locals: { ticket: @ticket }
         - elsif current_user.role == 'driver'
           = render partial: "driver_actions", locals: { ticket: @ticket } 
 
@@ -62,3 +62,16 @@
                     }
                   );
                 })
+            - if current_user.role == 'driver'
+              :javascript
+                  ymaps.ready(function(){
+                  var marker = null;
+                  TaxiApp.Utils.getMyCoords(function(latlng) {
+                      if(!marker) {
+                        marker = new ymaps.Placemark(latlng, { content: 'Мое местоположение' }, { preset: "twirl#redIcon" });
+                        window.map.geoObjects.add(marker);
+                      } else {
+                        marker.editor.geometry.setCoordinates(latlng);
+                      }
+                    }, { watch: true });
+                  });

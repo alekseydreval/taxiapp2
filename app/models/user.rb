@@ -20,6 +20,17 @@ class User < ActiveRecord::Base
 
   attr_accessor :login
 
+  state_machine :state, initial: :normal do
+
+    event :take_a_brake do
+      transition normal: :paused
+    end
+
+    event :continue do
+      transition paused: :normal
+    end
+  end
+
   def self.find_first_by_auth_conditions(warden_conditions)
     conditions = warden_conditions.dup
     if login = conditions.delete(:login)

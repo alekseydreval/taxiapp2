@@ -1,6 +1,13 @@
 Taxiapp2::Application.routes.draw do
   devise_for :users
 
+  resources :users do
+    member do
+      get "take_a_brake"
+      get "continue"
+    end
+  end
+
   resources :expenses
   resources :tickets do
     member do
