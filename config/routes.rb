@@ -1,6 +1,8 @@
 Taxiapp2::Application.routes.draw do
   devise_for :users
 
+  resources :reports, only: [:new, :create]
+
   resources :users do
     member do
       get "take_a_brake"

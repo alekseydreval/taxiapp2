@@ -17,7 +17,10 @@
       - elsif @ticket.suggestions.find{|sg| sg.rejected? }
         Отклонено
       - else
-        Выполняется
+        - if @ticket.state == 'started'
+          Выполняется
+        - else
+          Принята
         - if @ticket.driver == current_user
           Вами
         - else

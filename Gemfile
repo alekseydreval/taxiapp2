@@ -31,6 +31,9 @@ gem 'simple_form'
 gem 'russian'
 gem 'leaflet-rails'
 
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
+
 gem 'inherited_resources'
 gem 'responders'
 

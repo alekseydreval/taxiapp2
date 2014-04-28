@@ -1,0 +1,43 @@
+= wicked_pdf_stylesheet_link_tag 'application'
+%table.table.table-striped.table-bordered
+  %thead
+    %tr
+      %th Дата
+      %th Водитель
+      %th Время начала
+      %th Время окончания
+      %th Заработок с поездки
+      %th Чаевые
+      %th Расходы
+  %tbody
+    - @totalEarnings = 0
+    - @totalTips = 0
+    - @totalCosts = 0
+    - @tickets.each do |ticket|
+      - @earnings = ticket.payment_amount || 0
+      - @tips = ticket.payment_tip || 0
+      - @expenses = ticket.expenses.sum(:amount)
+      - @totalEarnings += @earnings
+      - @totalTips += @tips
+      - @totalCosts += @expenses
+      %tr
+        %td= ticket.created_at.strftime("%d.%m.%Y")
+        %td= ticket.driver.login
+        %td= ticket.started_at.strftime("%H:%M")
+        %td= ticket.finished_at.strftime("%H:%M")
+        %td= @earnings
+        %td= @tips
+        %td= @expenses
+  %tfoot
+    %tr
+      %td
+      %td
+      %td
+      %td
+      %td
+        %b
+          = @totalEarnings
+      %td
+        %b
+          = @totalTips
+      %td= @totalCosts

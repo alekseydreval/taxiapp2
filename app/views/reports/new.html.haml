@@ -1,0 +1,22 @@
+.container-fluid
+  .row-fluid
+    .span12
+      .panel.panel-default
+        .panel-heading
+          %h5.panel-title
+            Создание отчета
+        .panel-body
+          = form_tag '/reports', class: 'form-inline', id: 'report-form' do
+            = label_tag :start_date, "Дата начала"
+            = text_field_tag :start_date, "", {style: "margin-right: 20px;"}
+            = label_tag :end_date, "Дата конца"
+            = text_field_tag :end_date, "", {style: "margin-right: 20px;"}
+            = label_tag :generate_pdf, class: 'checkbox', style: "margin-right: 20px;" do
+              = check_box_tag :generate_pdf
+              Сгенерировать pdf-файл?
+            = submit_tag "Получить отчет", class: 'btn btn-primary', id: 'submit-report-form'
+          - if @tickets
+            - if @tickets.empty?
+              Нет данных о поездках
+            - else
+              = render partial: "report", locals: { tickets: @tickets }

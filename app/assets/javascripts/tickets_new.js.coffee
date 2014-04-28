@@ -50,4 +50,3 @@ $ ->
     date_time = date.get('select', 'yyyy/mm/dd') + ' ' + time.get('select', 'hh:i')
     $('#ticket_pick_up_time').val(date_time)
     $('#ticket_form').submit()
-    console.log 'sdfjhgsdgfhsdghjfgshjkdfhjsdfghjsdfgghjsdfghjsdfghjvdfsghjdfsghj'

@@ -1,6 +1,7 @@
 class Ticket < ActiveRecord::Base
   has_many :suggestions
   has_many :drivers, through: :suggestions
+  has_many :expenses
   belongs_to :dispatcher, class_name: 'User'
   belongs_to :driver, class_name: 'User'
 

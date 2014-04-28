@@ -15,9 +15,9 @@
               Отклонено водителями
             .well.well-small
               %ul
-                - for suggestion in ticket.suggestions.with_state(:rejected)
+                - for driver_name in ticket.suggestions.with_state(:rejected).map{|s| s.driver.username }.uniq
                   %li
-                    = suggestion.driver.username
+                    = driver_name
           - elsif ticket.suggestions.without_state(:rejected).present?
             %span.suggested_drivers{"data-drivers" => "#{ticket.suggestions.map {|s| s.driver.id}}"}
               Предложено водителям
