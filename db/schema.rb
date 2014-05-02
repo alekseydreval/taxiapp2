@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140427080021) do
+ActiveRecord::Schema.define(version: 20140501200907) do
 
   create_table "expenses", force: true do |t|
     t.integer  "ticket_id"
@@ -68,6 +68,9 @@ ActiveRecord::Schema.define(version: 20140427080021) do
     t.string   "username"
     t.string   "role"
     t.string   "state"
+    t.string   "phone"
+    t.string   "name"
+    t.string   "surname"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true

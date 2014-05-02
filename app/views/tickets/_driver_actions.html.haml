@@ -4,6 +4,7 @@
       - if @ticket.driver
         Статус поездки
       - else
+        = @ticket.driver
         Принять/отколнить
   .panel-body-compact
     .well.well-compact.well-compact-no-border
@@ -14,14 +15,7 @@
       - elsif can?(:take, @ticket)
         = button_to "Принять", take_ticket_path, class: "btn btn-large btn-primary"
         = button_to "Отклонить", reject_ticket_path, class: "btn btn-large btn-danger"
-      - elsif @ticket.suggestions.find{|sg| sg.rejected? }
-        Отклонено
-      - else
-        - if @ticket.state == 'started'
-          Выполняется
-        - else
-          Принята
-        - if @ticket.driver == current_user
-          Вами
-        - else
-          другим водителем
+      - if status = @ticket.status_for_driver(current_user)
+        .well.well-status
+          %h3
+            = status

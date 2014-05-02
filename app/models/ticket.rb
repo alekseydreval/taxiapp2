@@ -18,6 +18,7 @@ class Ticket < ActiveRecord::Base
   state_machine :state, initial: :unassigned do
     after_transition on: :start, do: :update_start_time
     after_transition on: :finish, do: :update_finish_time
+    after_transition on: :canel, do: :notify_canceled_ticket
 
     event :start do
       transition taken: :started
@@ -25,6 +26,10 @@ class Ticket < ActiveRecord::Base
 
     event :finish do
       transition started: :finished
+    end
+
+    event :cancel do
+      transition [:taken, :started] => :unassigned
     end
   end
 
@@ -43,6 +48,7 @@ class Ticket < ActiveRecord::Base
       false
     else
       update driver_id: driver.id, state: "taken"
+      suggestions.where("user_id = ? AND state = 'rejected' ", driver.id).each &:destroy
       WebsocketRails["dispatcher_#{self.dispatcher_id}"].trigger 'update', { ticket: self, answer: 'accepted', text: 'Предложение принято' }
     end
   end
@@ -58,15 +64,56 @@ class Ticket < ActiveRecord::Base
 
   def update_finish_time
     update finished_at: DateTime.now
+    WebsocketRails["dispatcher_#{self.dispatcher_id}"].trigger 'finish', { ticket: self, text: "Водитель #{self.driver.username} завершил поездку" }
   end
 
+  def notify_canceled_ticket
+    WebsocketRails["dispatcher_#{self.dispatcher_id}"].trigger 'cancel', { ticket: self, text: "Водитель #{self.driver.username} отменил поездку" }
+  end
 
   def formatted_time
     self.pick_up_time.strftime("%e %b, %H:%M")
   end
 
   def formatted_route
-    [pick_up_latlon.split(' ').reverse, drop_off_latlon.split(' ').reverse]
+    [pick_up_latlon.split(' ').reverse.map(&:to_f), drop_off_latlon.split(' ').reverse.map(&:to_f)]
+  end
+
+  def rejected_by
+    @rejected_by ||= self.suggestions.with_state(:rejected).map{|s| s.driver.username }.uniq
+  end
+
+  def suggested_to
+    @suggested_to ||= self.suggestions.without_state(:rejected).map{|s| s.driver.username }.uniq
+  end
+
+  def status_for_dispatcher(dispatcher)
+    status = ""
+  end
+
+  def status_for_driver(driver)
+    status = ""
+
+    if self.started?
+      status << "Выполняется"
+    elsif self.taken?
+      status << "Принята"
+    elsif self.finished?
+      return "Завершено"
+    elsif self.suggestions.select{|sg| sg.driver == driver }.all?{ |sg| sg.rejected? }
+      return "Отклонено"
+    else
+      return
+    end
+
+    if self.driver == driver
+      status << " Вами"
+    elsif self.driver
+      status << " другим водителем"
+    end
+
+    status
+
   end
 
 end

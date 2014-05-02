@@ -50,28 +50,39 @@
           .panel-body-compact.panel-full-height#map
             :javascript
                 ymaps.ready(function(){
-                  window.map = new ymaps.Map("map",  { center: [55.76, 37.64], zoom: 7 });
-                  var route = ["#{@ticket.pick_up_location}", "#{@ticket.drop_off_location}"];
-                  window.map.setBounds(#{ @ticket.formatted_route})
+                  window.map = new ymaps.Map("map",  { center: [59.92571748133317, 30.31614104908202], zoom: 11 });
+                  var route = #{@ticket.formatted_route}
                   ymaps.route(route).then(
                     function (route) {
                       map.geoObjects.add(route);
+
+                      if($('body').attr('data-user-type') == 'driver'){
+                        var points = [];
+
+                        var setMyCoords = function() {
+                          console.log('finish movement');
+                          var marker = null;
+                          TaxiApp.Utils.getMyCoords(function(latlng) {
+                            if(!marker) {
+                               marker = new ymaps.Placemark(latlng, { content: 'Мое местоположение' }, { preset: "twirl#redIcon" });
+                               window.map.geoObjects.add(marker);
+                               window.map.panTo(latlng, { duration: '2000', callback: function() {
+                                 map.setZoom(17, { duration: 1000 })
+                               } });
+                            } else {
+                              marker.editor.geometry.setCoordinates(latlng);
+                            }
+                          }, { watch: true });
+                        }
+                        console.log(#{@ticket.formatted_route});
+                        map.panTo(#{@ticket.formatted_route}, { callback: setMyCoords, flying: true, duration: 3000 });
+                      } else {
+                        window.map.setBounds(#{ @ticket.formatted_route});
+                      }
                     },
                     function (error) {
                       alert('Возникла ошибка: ' + error.message);
                     }
                   );
                 })
-            - if current_user.role == 'driver'
-              :javascript
-                  ymaps.ready(function(){
-                  var marker = null;
-                  TaxiApp.Utils.getMyCoords(function(latlng) {
-                      if(!marker) {
-                        marker = new ymaps.Placemark(latlng, { content: 'Мое местоположение' }, { preset: "twirl#redIcon" });
-                        window.map.geoObjects.add(marker);
-                      } else {
-                        marker.editor.geometry.setCoordinates(latlng);
-                      }
-                    }, { watch: true });
-                  });
+                  

@@ -16,7 +16,7 @@ class Ability
         !ticket.suggestions.where("user_id = ?", user.id).all?(&:rejected?)
       end
       can :start, Ticket do |ticket|
-        ticket.driver_id = user.id and
+        ticket.driver_id == user.id and
         ticket.state == "taken" and
         ticket.driver.tickets.with_state(:started).empty?
       end

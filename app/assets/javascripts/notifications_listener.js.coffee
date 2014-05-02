@@ -22,12 +22,18 @@ class TaxiApp.NotificationsListener
 
     if channel == 'dispatcher'
       @suggestionResponseChannel = @connection.subscribe "dispatcher_#{$('body').attr('data-user')}"
-      @suggestionResponseChannel.bind 'update', (response) ->
+      @suggestionResponseChannel.bind 'update', (response) =>
         console.log 'Got suggestion response'
-        msg_type = if response.answer == 'accepted' then 'info' else 'warning'
-        $.notify(response.text, {autoHide: false, className: msg_type })
-        $(document).on "click", ".notifyjs-bootstrap-base", ->
-          location.href = "#{location.protocol}//#{location.host}/tickets/#{response.ticket.id}"
+        type = if response.answer == 'accepted' then 'info' else 'warning'
+        @createTicketNotification(response.text, response.ticket.id, type)
+
+      @suggestionResponseChannel.bind 'finish', (response) =>
+        console.log "ticket finished"
+        @createTicketNotification(response.text, response.ticket.id, 'info')
+        
+      @suggestionResponseChannel.bind 'cancel', (response) =>
+        console.log "ticket canceled"
+        @createTicketNotification(response.text, response.ticket.id, 'warning')
 
 
     window.connection = @connection
@@ -41,6 +47,17 @@ class TaxiApp.NotificationsListener
     if $('#map').length
       @map = new TaxiApp.Map
     @subscribeToNewMessage()
+
+  createTicketNotification: (text, ticketId, type) ->
+    @id ?= 0; @id += 1;
+    notificationId = "notification_#{@id}"
+    $.notify(text, {autoHide: false, className: type })
+    setTimeout ->
+      $('.notifyjs-bootstrap-base').first().attr('id', notificationId)
+      $(document).on "click", "##{notificationId}", ->
+        location.href = "#{location.protocol}//#{location.host}/tickets/#{ticketId}"
+    , 500
+
 
   subscribeToNewMessage: ->
     @chat_channel.bind 'new_message', (obj) ->

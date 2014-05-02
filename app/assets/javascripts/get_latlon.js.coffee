@@ -4,8 +4,7 @@ window.TaxiApp.Utils = {}
 TaxiApp.Utils.getMyCoords = (callback, opts = {}) ->
   if tracker = navigator.geolocation
     if cached_coords = TaxiApp.Utils.cachedCoords
-      console.log 'returning cached coords'
-      console.log cached_coords
+      console.log 'returning cached coords:', cached_coords
       callback cached_coords
     else
       tracker.getCurrentPosition (position) ->

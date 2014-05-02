@@ -1,33 +1,37 @@
 .panel.panel-default.panel-tickets-show-assign
   .panel-heading
     %h5.panel-title
-      Назначить водителя
+      Действия
   .panel-body-compact
     .well.well-compact.well-compact-no-border
-      - if ticket.driver
-        %span.assigned_driver{"data-driver" => "#{ticket.driver.id}"}
-          Присвоено водителю
+      .well.well-status
+        - if ticket.taken?
+          %span.assigned_driver{"data-driver" => "#{ticket.driver.id}"}
+            Присвоено водителю
+            = ticket.driver.username
+        - elsif ticket.started?
+          %span.working_driver{"data-driver" => "#{ticket.driver.id}"}
+            Выполняется водителю
+            = ticket.driver.username
+        - elsif ticket.finished?
+          Завершено водителем
           = ticket.driver.username
-      - else
-        - if ticket.suggestions.present?
-          - if ticket.suggestions.with_state(:rejected).present?
+        - else
+          - if ticket.rejected_by.present?
             %span.suggested_drivers{"data-drivers" => "#{ticket.suggestions.map {|s| s.driver.id}}"}
               Отклонено водителями
-            .well.well-small
-              %ul
-                - for driver_name in ticket.suggestions.with_state(:rejected).map{|s| s.driver.username }.uniq
-                  %li
-                    = driver_name
-          - elsif ticket.suggestions.without_state(:rejected).present?
+            %ul
+              - for driver_name in ticket.rejected_by
+                %li
+                  = driver_name
+          - elsif ticket.suggested_to.present?
             %span.suggested_drivers{"data-drivers" => "#{ticket.suggestions.map {|s| s.driver.id}}"}
               Предложено водителям
-            .well.well-small
-              %ul
-                - for suggestion in ticket.suggestions.without_state(:rejected)
-                  %li
-                    = suggestion.driver.username
-        - else
-          .well.well-small 
+            %ul
+              - for driver_name in ticket.suggested_to
+                %li
+                  = driver_name
+          - else
             Поездка не предложена. Выберите водителя на карте или из списка, чтобы предложить поездку
         = simple_form_for [ticket, Suggestion.new] do |f|
           - possible_suggestions = User.with_state("normal").where("users.role = 'driver'") - ticket.suggestions.without_state(:rejected).map(&:driver)
