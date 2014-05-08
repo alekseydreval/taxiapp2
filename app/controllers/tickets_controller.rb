@@ -11,7 +11,7 @@ class TicketsController < InheritedResources::Base
   # for Driver
   def suggested
     @title = "Предложенные"
-    @tickets = current_user.suggestions.without_state(:rejected).map(&:ticket).compact
+    @tickets = current_user.suggestions.without_state(:rejected).map(&:ticket).compact.select(&:suggested?)
     render "index"
   end
 

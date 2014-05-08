@@ -20,6 +20,10 @@ class Ticket < ActiveRecord::Base
     after_transition on: :finish, do: :update_finish_time
     after_transition on: :canel, do: :notify_canceled_ticket
 
+    event :suggest do
+      transition [:suggested, :unassigned] => :suggested
+    end
+
     event :start do
       transition taken: :started
     end
@@ -32,7 +36,6 @@ class Ticket < ActiveRecord::Base
       transition [:taken, :started] => :unassigned
     end
   end
-
 
   def self.for_driver(driver)
     where("driver_id = ?", driver.id).order('pick_up_time ASC')
@@ -87,14 +90,12 @@ class Ticket < ActiveRecord::Base
     @suggested_to ||= self.suggestions.without_state(:rejected).map{|s| s.driver.username }.uniq
   end
 
-  def status_for_dispatcher(dispatcher)
+  def status
     status = ""
-  end
-
-  def status_for_driver(driver)
-    status = ""
-
-    if self.started?
+    
+    if self.unassigned?
+      status << "Не назначено"
+    elsif self.started?
       status << "Выполняется"
     elsif self.taken?
       status << "Принята"
@@ -102,18 +103,44 @@ class Ticket < ActiveRecord::Base
       return "Завершено"
     elsif self.suggestions.select{|sg| sg.driver == driver }.all?{ |sg| sg.rejected? }
       return "Отклонено"
+    elsif self.suggested?
+      return "Предложено"
     else
       return
     end
 
-    if self.driver == driver
-      status << " Вами"
-    elsif self.driver
-      status << " другим водителем"
+    status
+  end
+
+  def status_for_driver(driver)
+    if common_status = self.status
+
+      if self.driver == driver
+        common_status << " Вами"
+      elsif self.driver
+        common_status << " другим водителем"
+      end
+
+      return status
+    end
+  end
+
+  def label_class
+    label_class = "label-"
+
+    if self.unassigned?
+      label_class << "inverse"
+    elsif self.suggested?
+      label_class << "info"
+    elsif self.started? || self.taken?
+      label_class << "success"
+    elsif self.finished?
+      label_class << ""
+    else
+      return ""
     end
 
-    status
-
+    label_class
   end
 
 end

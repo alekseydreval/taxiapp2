@@ -21,6 +21,8 @@ class User < ActiveRecord::Base
   attr_accessor :login
 
   state_machine :state, initial: :normal do
+    after_transition on: :take_a_brake, do: :notify_break
+    after_transition on: :continue, do: :notify_continue
 
     event :take_a_brake do
       transition normal: :paused
@@ -29,6 +31,10 @@ class User < ActiveRecord::Base
     event :continue do
       transition paused: :normal
     end
+  end
+
+  def self.drivers
+    where("role = 'driver'")
   end
 
   def self.find_first_by_auth_conditions(warden_conditions)
@@ -40,6 +46,14 @@ class User < ActiveRecord::Base
     end
   end
 
+  def notify_break
+    WebsocketRails["dispatcher"].trigger 'break', { text: "Водитель #{self.fullname} взял перерыв" }
+  end
+
+  def notify_continue
+    WebsocketRails["dispatcher"].trigger 'continue', { text: "Водитель #{self.fullname} закончил перерыв" }
+  end
+
   def login=(login)
     @login = login
   end
@@ -48,9 +62,16 @@ class User < ActiveRecord::Base
     @login || self.username || self.email
   end
 
+  def fullname
+    "#{self.name} #{self.surname}"
+  end
+
   def current_ticket
     self.tickets.with_state(:started).first
   end
 
+  def self.available_for_suggestions(ticket)
+    where("users.role = 'driver' AND state = 'normal' ") - ticket.suggestions.without_state(:rejected).map(&:driver)
+  end
 
 end

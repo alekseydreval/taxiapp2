@@ -11,7 +11,7 @@ class Ability
       can [:update, :delete], Ticket, driver_id: user.id
       can :read, Ticket
       can :take, Ticket do |ticket|
-        ticket.state == "unassigned" and
+        ticket.suggested? and
         ticket.suggestions.any? { |s| s.user_id == user.id } and
         !ticket.suggestions.where("user_id = ?", user.id).all?(&:rejected?)
       end

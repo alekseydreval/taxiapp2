@@ -11,7 +11,7 @@
             = ticket.driver.username
         - elsif ticket.started?
           %span.working_driver{"data-driver" => "#{ticket.driver.id}"}
-            Выполняется водителю
+            Выполняется водителем
             = ticket.driver.username
         - elsif ticket.finished?
           Завершено водителем
@@ -31,11 +31,14 @@
               - for driver_name in ticket.suggested_to
                 %li
                   = driver_name
-          - else
-            Поездка не предложена. Выберите водителя на карте или из списка, чтобы предложить поездку
-        = simple_form_for [ticket, Suggestion.new] do |f|
-          - possible_suggestions = User.with_state("normal").where("users.role = 'driver'") - ticket.suggestions.without_state(:rejected).map(&:driver)
-          - if possible_suggestions.present?
-            = f.association :driver, collection: possible_suggestions, as: :select, label_method: :username, label: false, include_blank: "<Предложить>"
-            = f.hidden_field :ticket_id, value: ticket.id
-            = f.submit 'Разослать предложение', class: 'btn btn-primary'
+          - possible_suggestions = User.available_for_suggestions(ticket)
+      .well.well-status
+        - if possible_suggestions.present?
+          Выберите водителя  из списка, чтобы предложить поездку
+          = simple_form_for [ticket, Suggestion.new] do |f|
+            - if possible_suggestions.present?
+              = f.association :driver, collection: possible_suggestions, as: :select, label_method: :fullname, label: false, include_blank: "<Предложить>"
+              = f.hidden_field :ticket_id, value: ticket.id
+              = f.submit 'Отправить предложение', class: 'btn btn-primary'
+        - elsif !ticket.driver
+          Нет водителей для предложений

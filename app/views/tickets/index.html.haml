@@ -6,10 +6,15 @@
           .panel-heading
             %h5.panel-title
               = @title
-          .panel-body-compact
+          .panel-body-compact{style: "min-height:300px;"}
+            - if @tickets.empty?
+              %h3{"style" => "text-align: center; margin-top: 70px;"} Нет поездок в данной категории
             - for ticket in @tickets
               .well.well-compact
                 .pull-right
+                  - if ticket.label_class.present?
+                    %span.label{"class" => ticket.label_class }
+                      = ticket.status
                   %b
                     = ticket.formatted_time
                   %br

@@ -13,7 +13,7 @@ class TaxiApp.Map
     $('#drivers_online').html JST["drivers_list"](positions : obj.positions)
 
   updateDriversPositions: (obj) =>
-    console.log 'updating map'
+    console.log 'updating map', obj
     
     if obj && obj.positions && obj.positions.length
       console.log obj.positions
@@ -28,7 +28,12 @@ class TaxiApp.Map
           _.contains(ids, parseInt(pos.driver_id)) && @_moveOrAddDriver(pos, 'darkorange') && true
       
       for position in obj.positions
-        @_moveOrAddDriver(position, 'blue')
+        if position.driver_info.state == "normal"
+          color = "blue"
+        else
+          console.log 123123
+          color = "black"
+        @_moveOrAddDriver(position, color)
 
   showDriverEndpoints: ->
     if $("#map").attr('data-positions')
@@ -82,8 +87,11 @@ class TaxiApp.Map
   ####################
 
   createMarker: (driver, color) ->
-    marker = new ymaps.Placemark(driver.latlng, { hintContent: driver.username, balloonContent: driver.username },
-                                 { preset: "twirl##{color}Icon" })
+    latlng = driver.latlng
+    driver = driver.driver_info
+    balloonContent = "<div>Состояние: <b>#{if driver.state == "paused" then "На перерыве" else "В работе"}</b></div> <div>Телефон: <b>#{driver.phone}</b></div>"
+    marker = new ymaps.Placemark(latlng, { iconContent: "#{driver.name} #{driver.surname}", balloonContent: balloonContent },
+                                 { preset: "twirl##{color}StretchyIcon" })
     window.map.geoObjects.add(marker)
     marker
 

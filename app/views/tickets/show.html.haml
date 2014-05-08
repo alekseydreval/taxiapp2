@@ -51,7 +51,8 @@
             :javascript
                 ymaps.ready(function(){
                   window.map = new ymaps.Map("map",  { center: [59.92571748133317, 30.31614104908202], zoom: 11 });
-                  var route = #{@ticket.formatted_route}
+                  var route = ["Санкт-Петербург, " + "#{@ticket.pick_up_location}", "Санкт-Петербург, " + "#{@ticket.drop_off_location}"];
+                  console.log(12);
                   ymaps.route(route).then(
                     function (route) {
                       map.geoObjects.add(route);
@@ -76,13 +77,13 @@
                         }
                         console.log(#{@ticket.formatted_route});
                         map.panTo(#{@ticket.formatted_route}, { callback: setMyCoords, flying: true, duration: 3000 });
-                      } else {
-                        window.map.setBounds(#{ @ticket.formatted_route});
                       }
                     },
                     function (error) {
                       alert('Возникла ошибка: ' + error.message);
                     }
                   );
+                  window.map.controls.add('mapTools');
+                  window.map.controls.add('zoomControl');
                 })
                   

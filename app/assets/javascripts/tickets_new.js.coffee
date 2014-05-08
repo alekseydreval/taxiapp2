@@ -5,7 +5,7 @@ $ ->
       console.log(query)
       window.geo = null;
       $('#submit_ticket_form').attr('disabled', true)
-      $.getJSON "http://geocode-maps.yandex.ru/1.x/?format=json&geocode=Санкт-Петербург" + query, (data) ->
+      $.getJSON "http://geocode-maps.yandex.ru/1.x/?format=json&geocode=Санкт-Петербург," + query, (data) ->
         window.geo_coded = _.object(_.map data.response.GeoObjectCollection.featureMember, (object) -> [object.GeoObject.name, object.GeoObject.boundedBy.Envelope.lowerCorner])
         res = _.map data.response.GeoObjectCollection.featureMember, (object) -> object.GeoObject.name
         cb(res)

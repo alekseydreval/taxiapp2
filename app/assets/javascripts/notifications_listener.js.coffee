@@ -21,19 +21,30 @@ class TaxiApp.NotificationsListener
     @connection = new WebSocketRails("#{document.location.host}/websocket")
 
     if channel == 'dispatcher'
-      @suggestionResponseChannel = @connection.subscribe "dispatcher_#{$('body').attr('data-user')}"
-      @suggestionResponseChannel.bind 'update', (response) =>
+      
+      @ticketsChannel = @connection.subscribe "dispatcher_#{$('body').attr('data-user')}"
+      @ticketsChannel.bind 'update', (response) =>
         console.log 'Got suggestion response'
         type = if response.answer == 'accepted' then 'info' else 'warning'
-        @createTicketNotification(response.text, response.ticket.id, type)
+        @createNotification(response.text, response.ticket.id, type)
 
-      @suggestionResponseChannel.bind 'finish', (response) =>
+      @ticketsChannel.bind 'finish', (response) =>
         console.log "ticket finished"
-        @createTicketNotification(response.text, response.ticket.id, 'info')
+        @createNotification(response.text, response.ticket.id, 'info')
         
-      @suggestionResponseChannel.bind 'cancel', (response) =>
+      @ticketsChannel.bind 'cancel', (response) =>
         console.log "ticket canceled"
-        @createTicketNotification(response.text, response.ticket.id, 'warning')
+        @createNotification(response.text, response.ticket.id, 'warning')
+
+
+      @driversStateChannel = @connection.subscribe "dispatcher"
+      @driversStateChannel.bind 'break', (response) =>
+        console.log "break taken"
+        @createNotification(response.text, null, 'warning')
+
+      @driversStateChannel.bind 'continue', (response) =>
+        console.log "break finished"
+        @createNotification(response.text, null, 'info')
 
 
     window.connection = @connection
@@ -48,15 +59,16 @@ class TaxiApp.NotificationsListener
       @map = new TaxiApp.Map
     @subscribeToNewMessage()
 
-  createTicketNotification: (text, ticketId, type) ->
+  createNotification: (text, ticketId, type) ->
     @id ?= 0; @id += 1;
     notificationId = "notification_#{@id}"
     $.notify(text, {autoHide: false, className: type })
-    setTimeout ->
-      $('.notifyjs-bootstrap-base').first().attr('id', notificationId)
-      $(document).on "click", "##{notificationId}", ->
-        location.href = "#{location.protocol}//#{location.host}/tickets/#{ticketId}"
-    , 500
+    if ticketId
+      setTimeout ->
+        $('.notifyjs-bootstrap-base').first().attr('id', notificationId)
+        $(document).on "click", "##{notificationId}", ->
+          location.href = "#{location.protocol}//#{location.host}/tickets/#{ticketId}"
+      , 500
 
 
   subscribeToNewMessage: ->

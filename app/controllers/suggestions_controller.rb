@@ -1,5 +1,9 @@
 class SuggestionsController < InheritedResources::Base
   load_resource except: :create
+
+  def create
+    create!(notice: "Вы предложили поездку"){ ticket_path(@suggestion.ticket) }
+  end
   
   def accept
     @suggestion.accept

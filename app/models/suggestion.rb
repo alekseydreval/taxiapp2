@@ -13,6 +13,7 @@ class Suggestion < ActiveRecord::Base
   end
 
   def notify_driver
+    ticket.suggest      
     WebsocketRails["driver_#{self.driver.id}"].trigger 'new', {suggestion: self, ticket: self.ticket}
   end
 

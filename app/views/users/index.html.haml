@@ -1,0 +1,24 @@
+#C1.span12
+  .inner-container-fluid
+    #driver_show.tickets-list{"data-ticket-reload-path" => "/users/2"}
+      #ride
+        .panel.panel-default{style: "margin-bottom: 70px;"}
+          .panel-heading
+            %h5.panel-title
+              = @title
+          .panel-body-compact{style: "min-height:300px;"}
+            - for user in @users
+              .well.well-compact
+                %div
+                  - if user.paused?
+                    %span.label На переыве
+                  - else
+                    %span.label.label-info В работе
+                %div
+                  Полное Имя:
+                  %b
+                    = user.fullname
+                %dib
+                  Телефон:
+                  %b
+                    = user.phone

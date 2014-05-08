@@ -8,6 +8,9 @@ Taxiapp2::Application.routes.draw do
       get "take_a_brake"
       get "continue"
     end
+    collection do
+      get "drivers"
+    end
   end
 
   resources :expenses
