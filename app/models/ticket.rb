@@ -15,25 +15,29 @@ class Ticket < ActiveRecord::Base
   scope :scheduled, -> { where("driver_id IS NOT NULL and tickets.state = 'taken'") }
   scope :unscheduled, -> { where("driver_id IS NULL") }
 
-  state_machine :state, initial: :unassigned do
+  state_machine :state, initial: "не назначена" do
     after_transition on: :start, do: :update_start_time
     after_transition on: :finish, do: :update_finish_time
     after_transition on: :canel, do: :notify_canceled_ticket
 
-    event :suggest do
-      transition [:suggested, :unassigned] => :suggested
+    event "предложить" do
+      transition ["предложена",  "не назначена"] => "предложена"
     end
 
-    event :start do
-      transition taken: :started
+    event "принять" do
+      transition ["предложена"] => "принята"
     end
 
-    event :finish do
-      transition started: :finished
+    event "начать" do
+      transition "принята"=> "начата"
     end
 
-    event :cancel do
-      transition [:taken, :started] => :unassigned
+    event "закончить" do
+      transition "начата" => "закончена"
+    end
+
+    event "отменена" do
+      transition ["принята", "начата"] => "не назначена"
     end
   end
 
@@ -42,7 +46,7 @@ class Ticket < ActiveRecord::Base
   end
 
   def pick_up_time=(time)
-  	super DateTime.strptime(time, "%Y/%m/%d %H:%M")
+    super DateTime.strptime(time, "%Y/%m/%d %H:%M")
   end
 
   def take_by(driver)
