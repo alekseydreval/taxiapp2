@@ -22,7 +22,7 @@
       - @totalCosts += @expenses
       %tr
         %td= ticket.created_at.strftime("%d.%m.%Y")
-        %td= ticket.driver.login
+        %td= ticket.driver.fullname
         %td= ticket.started_at.strftime("%H:%M")
         %td= ticket.finished_at.strftime("%H:%M")
         %td= @earnings

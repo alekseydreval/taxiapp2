@@ -4,7 +4,7 @@ class ReportsController < ApplicationController
 
   def create
     @start_date, @end_date = Date.parse( params[:start_date] ), Date.parse( params[:end_date] )
-    @tickets = Ticket.where("created_at > ? AND finished_at < ?", @start_date, @end_date)
+    @tickets = Ticket.where("created_at > ? AND finished_at < ?", @start_date, @end_date + 1.day)
     if params[:generate_pdf]
       render :pdf => "Отчет с #{@start_date} по #{@end_date}",
              :disposition=> 'attachment',
