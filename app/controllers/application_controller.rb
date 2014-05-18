@@ -5,6 +5,15 @@ class ApplicationController < ActionController::Base
 
   before_filter :configure_permitted_parameters, if: :devise_controller?
 
+  alias_method :devise_current_user, :current_user
+
+  def current_user
+    if devise_current_user
+      devise_current_user.driver || devise_current_user.dispatcher || devise_current_user.admin
+    end
+  end
+
+
   protected
 
   def configure_permitted_parameters

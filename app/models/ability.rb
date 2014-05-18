@@ -4,16 +4,16 @@ class Ability
   def initialize(user)
     user ||= User.new
 
-    case user.role
-    when 'dispatcher'
+    case user
+    when Dispatcher
       can [:read, :update, :delete], Ticket
-    when 'driver'
+    when Driver
       can [:update, :delete], Ticket, driver_id: user.id
       can :read, Ticket
       can :take, Ticket do |ticket|
         ticket.suggested? and
-        ticket.suggestions.any? { |s| s.user_id == user.id } and
-        !ticket.suggestions.where("user_id = ?", user.id).all?(&:rejected?)
+        ticket.suggestions.any? { |s| s.driver_id == user.id } and
+        !ticket.suggestions.where("driver_id = ?", user.id).all?(&:rejected?)
       end
       can :start, Ticket do |ticket|
         ticket.driver_id == user.id and
@@ -24,7 +24,7 @@ class Ability
       if !user.current_ticket
         can :take_a_brake
       end
-    when 'admin'
+    when Admin
       can :manage, :all
     end
     #

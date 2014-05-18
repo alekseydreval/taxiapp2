@@ -17,6 +17,6 @@ class SuggestionsController < InheritedResources::Base
 
   private
     def permitted_params
-      params.permit(suggestion: [:user_id, :ticket_id])
+      params.permit(suggestion: [:ticket_id, :driver_id])
     end
 end

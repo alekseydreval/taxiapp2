@@ -47,6 +47,8 @@ gem 'haml_coffee_assets'
 gem 'devise'
 gem 'cancan'
 
+gem 'railroady'
+
 gem 'state_machine'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder

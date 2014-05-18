@@ -34,9 +34,9 @@
   .inner-container-fluid
     #driver_show.tickets-list
       .left-panel
-        - if current_user.role == 'dispatcher'
+        - if current_user.is_a? Dispatcher
           = render partial: "dispatcher_actions", locals: { ticket: @ticket }
-        - elsif current_user.role == 'driver'
+        - elsif current_user.is_a? Driver
           = render partial: "driver_actions", locals: { ticket: @ticket } 
 
 #C1.span6

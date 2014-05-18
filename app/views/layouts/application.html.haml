@@ -8,7 +8,7 @@
     /[if lt IE 9]
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     %script{src: "http://api-maps.yandex.ru/2.0-stable/?load=package.full&lang=ru_RU", type: 'text/javascript'}
-  %body{ "data-user-type" => "#{current_user ? current_user.role : nil}", "data-user" => "#{current_user ? current_user.id : nil}", "page" => "#{controller.controller_name}##{controller.action_name}" }
+  %body{ "data-user-type" => "#{current_user ? current_user.class.name.downcase : nil}", "data-user" => "#{current_user ? current_user.id : nil}", "page" => "#{controller.controller_name}##{controller.action_name}" }
     - if current_user
       %header.navbar.navbar-fixed-top.navbar-inverse{:style => "allign: center; "}
         .navbar-inner
@@ -18,7 +18,7 @@
                 %li
                   %a{:href => "/users/2"}
                     %span.main_icon
-                      = current_user.login
+                      = current_user.user.login
               .login_new.pull-right{"style" => "margin-top: 10px;"}
                 = link_to "Заершить работу", destroy_user_session_path, "style" => "color : #999999;", :method => :delete
             
@@ -29,10 +29,6 @@
         .inner-container-fluid
           = yield
         .modals
-          / Place the status modal outside the nav div to show it properly
-          / end
-          / Place the new expense modal outside the nav div to show it properly
-          / end
           .custom
 
     - if current_user
@@ -41,7 +37,32 @@
           .container
             %nav
               %ul.nav
-                - if current_user.role == 'driver'
+                - if current_user.is_a? Driver
                   = render partial: 'shared/driver_bar', locals: { driver: current_user }
                 - else
                   = render partial: 'shared/dispatcher_bar', locals: { dispatcher: current_user }
+    - if current_user.is_a? Driver
+      #newModal.modal.hide.fade{"aria-hidden" => "false", "aria-labelledby" => "headerText", role: "dialog", style: "display: block;", tabindex: "-1"}
+        .modal-header
+          %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", type: "button"} ×
+          %h3#headerText Добавить расходы
+        - dst = current_user.current_ticket.present? ? [current_user.current_ticket, Expense.new] : Expense.new
+        = simple_form_for dst, { input_html: { id: 'new_expense', class: 'new_expense' } } do |f|
+          .modal-body
+            = f.input :amount, label: 'Размер'
+            = f.select :expenses_type, ['Заправка', 'Мойка', 'Тех. обслуживание']
+          .modal-footer
+            = f.submit 'Добавить',  { class: 'btn' }
+
+    #finishModal.modal.hide.fade{"aria-hidden" => "false", "aria-labelledby" => "headerText", role: "dialog", tabindex: "-1"}
+      .modal-header
+        %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", type: "button"} ×
+        %h3#headerText Завершить поездку
+      - if @ticket
+        = simple_form_for @ticket, { url: finish_ticket_path(@ticket), method: "post", input_html: { id: '1' } }  do |f|
+          .modal-body
+            = f.input :payment_amount, label: 'Размер оплаты', required: true
+            = f.select :payment_method, ['Наличными', 'Кредитная карта'], label: 'Способ оплаты'
+            = f.input :payment_tip, label: 'Чаевые'
+          .modal-footer
+            = f.submit 'Завершить', { class: 'btn btn-primary' }

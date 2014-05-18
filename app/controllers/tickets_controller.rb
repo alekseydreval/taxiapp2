@@ -23,6 +23,10 @@ class TicketsController < InheritedResources::Base
     end
   end
 
+  def index
+    @tickets = current_user.tickets
+  end
+
   def start
     @ticket.start
     redirect_to :root, notice: "Вы начали поездку"

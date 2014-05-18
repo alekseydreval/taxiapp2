@@ -10,7 +10,7 @@ class CarTrackerController < WebsocketRails::BaseController
       if message[:latlng].present?
         puts "Location for #{message[:driver_id]} -> #{message[:latlng]}"
         connection_store[:position] = message
-        connection_store[:position][:driver_info] ||= User.find(message[:driver_id])
+        connection_store[:position][:driver_info] ||= Driver.find(message[:driver_id])
         insert_or_update_position(controller_store[:positions], connection_store[:position])
         locationChanged
       end  

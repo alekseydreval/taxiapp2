@@ -1,0 +1,43 @@
+%h2 Sign up
+= @user.driver ||= Driver.new; @user.dispatcher ||= Dispatcher.new; @user.admin ||= Admin.new;
+= simple_form_for(@user, url: registration_path(@user)) do |f|
+  = f.error_notification
+  .form-inputs
+    = f.input :username, required: true, autofocus: true
+    = f.input :password, required: true
+    = f.input :password_confirmation, required: true
+  .form-inputs
+    #accordion2.accordion
+      .accordion-group
+        .accordion-heading
+          %a.accordion-toggle{"data-parent" => "#accordion2", "data-toggle" => "collapse", href: "#collapseOne"}
+            Водитель
+        #collapseOne.accordion-body.collapse
+          .accordion-inner
+            = f.simple_fields_for :driver do |driver|
+              = driver.input :phone
+              = driver.input :name
+              = driver.input :surname
+              = driver.submit "Зарегистрировать водителя", class: 'btn button btn-primary'
+      .accordion-group
+        .accordion-heading
+          %a.accordion-toggle{"data-parent" => "#accordion2", "data-toggle" => "collapse", href: "#collapseTwo"}
+            Диспетчер
+        #collapseTwo.accordion-body.collapse
+          .accordion-inner
+            = f.simple_fields_for :dispatcher do |dispatcher|
+              = dispatcher.input :name
+              = dispatcher.input :surname
+              = dispatcher.submit "Зарегистрировать диспетчера", class: 'btn button btn-primary'
+      .accordion-group
+        .accordion-heading
+          %a.accordion-toggle{"data-parent" => "#accordion2", "data-toggle" => "collapse", href: "#collapseThree"}
+            Администратор
+        #collapseThree.accordion-body.collapse
+          .accordion-inner
+            = f.simple_fields_for :admin do |admin|
+              = admin.submit "Зарегистрировать администратора", class: 'btn button btn-primary'
+
+  .form-actions
+    = f.button :submit, "Зарегистрировать"
+= render "devise/shared/links"

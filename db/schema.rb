@@ -11,7 +11,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140501200907) do
+ActiveRecord::Schema.define(version: 20140518180647) do
+
+  create_table "admins", force: true do |t|
+    t.integer "user_id"
+  end
+
+  create_table "dispatchers", force: true do |t|
+    t.integer "user_id"
+    t.string  "name"
+    t.string  "surname"
+  end
+
+  create_table "drivers", force: true do |t|
+    t.integer "user_id"
+    t.string  "phone"
+    t.string  "name"
+    t.string  "surname"
+    t.string  "state"
+  end
 
   create_table "expenses", force: true do |t|
     t.integer  "ticket_id"
@@ -25,7 +43,7 @@ ActiveRecord::Schema.define(version: 20140501200907) do
   create_table "suggestions", force: true do |t|
     t.string   "state"
     t.integer  "ticket_id"
-    t.integer  "user_id"
+    t.integer  "driver_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -66,11 +84,6 @@ ActiveRecord::Schema.define(version: 20140501200907) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "username"
-    t.string   "role"
-    t.string   "state"
-    t.string   "phone"
-    t.string   "name"
-    t.string   "surname"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true

@@ -2,8 +2,8 @@ class Ticket < ActiveRecord::Base
   has_many :suggestions
   has_many :drivers, through: :suggestions
   has_many :expenses
-  belongs_to :dispatcher, class_name: 'User'
-  belongs_to :driver, class_name: 'User'
+  belongs_to :dispatcher
+  belongs_to :driver
 
   accepts_nested_attributes_for :suggestions
 
@@ -37,9 +37,9 @@ class Ticket < ActiveRecord::Base
     end
   end
 
-  def self.for_driver(driver)
-    where("driver_id = ?", driver.id).order('pick_up_time ASC')
-  end
+  # def self.for_driver(driver)
+  #   where("driver_id = ?", driver.id).order('pick_up_time ASC')
+  # end
 
   def pick_up_time=(time)
   	super DateTime.strptime(time, "%Y/%m/%d %H:%M")
@@ -51,13 +51,13 @@ class Ticket < ActiveRecord::Base
       false
     else
       update driver_id: driver.id, state: "taken"
-      suggestions.where("user_id = ? AND state = 'rejected' ", driver.id).each &:destroy
+      suggestions.where("driver_id = ? AND state = 'rejected' ", driver.id).each &:destroy
       WebsocketRails["dispatcher_#{self.dispatcher_id}"].trigger 'update', { ticket: self, answer: 'accepted', text: 'Предложение принято' }
     end
   end
 
   def reject_by(user)
-    self.suggestions.without_state(:rejected).where("user_id = ?", user.id).first.reject
+    self.suggestions.without_state(:rejected).where("driver_id = ?", user.id).first.reject
     WebsocketRails["dispatcher_#{self.dispatcher_id}"].trigger 'update', { ticket: self, answer: 'rejected', text: 'Предложение было отклонено' }
   end
 
@@ -67,11 +67,11 @@ class Ticket < ActiveRecord::Base
 
   def update_finish_time
     update finished_at: DateTime.now
-    WebsocketRails["dispatcher_#{self.dispatcher_id}"].trigger 'finish', { ticket: self, text: "Водитель #{self.driver.username} завершил поездку" }
+    WebsocketRails["dispatcher_#{self.dispatcher_id}"].trigger 'finish', { ticket: self, text: "Водитель #{self.driver.fullname} завершил поездку" }
   end
 
   def notify_canceled_ticket
-    WebsocketRails["dispatcher_#{self.dispatcher_id}"].trigger 'cancel', { ticket: self, text: "Водитель #{self.driver.username} отменил поездку" }
+    WebsocketRails["dispatcher_#{self.dispatcher_id}"].trigger 'cancel', { ticket: self, text: "Водитель #{self.driver.fullname} отменил поездку" }
   end
 
   def formatted_time
@@ -83,11 +83,11 @@ class Ticket < ActiveRecord::Base
   end
 
   def rejected_by
-    @rejected_by ||= self.suggestions.with_state(:rejected).map{|s| s.driver.username }.uniq
+    @rejected_by ||= self.suggestions.with_state(:rejected).map{|s| s.driver.fullname }.uniq
   end
 
   def suggested_to
-    @suggested_to ||= self.suggestions.without_state(:rejected).map{|s| s.driver.username }.uniq
+    @suggested_to ||= self.suggestions.without_state(:rejected).map{|s| s.driver.fullname }.uniq
   end
 
   def status
@@ -101,8 +101,8 @@ class Ticket < ActiveRecord::Base
       status << "Принята"
     elsif self.finished?
       return "Завершено"
-    elsif self.suggestions.select{|sg| sg.driver == driver }.all?{ |sg| sg.rejected? }
-      return "Отклонено"
+    elsif s = self.suggestions.select{|sg| sg.driver == driver } and s.present? and s.all?{ |sg| sg.rejected? }
+      return "Отклонено #{self.suggestions.first.attributes}"
     elsif self.suggested?
       return "Предложено"
     else
@@ -121,7 +121,7 @@ class Ticket < ActiveRecord::Base
         common_status << " другим водителем"
       end
 
-      return status
+      return common_status
     end
   end
 

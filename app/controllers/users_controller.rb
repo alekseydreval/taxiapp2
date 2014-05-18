@@ -13,7 +13,7 @@ class UsersController < ApplicationController
   end
 
   def drivers
-    @users = User.drivers
+    @users = Driver.all
     @title = "Водители"
     render "index"
   end

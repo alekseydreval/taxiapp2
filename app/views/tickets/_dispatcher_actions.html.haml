@@ -8,14 +8,14 @@
         - if ticket.taken?
           %span.assigned_driver{"data-driver" => "#{ticket.driver.id}"}
             Присвоено водителю
-            = ticket.driver.username
+            = ticket.driver.fullname
         - elsif ticket.started?
           %span.working_driver{"data-driver" => "#{ticket.driver.id}"}
             Выполняется водителем
-            = ticket.driver.username
+            = ticket.driver.fullname
         - elsif ticket.finished?
           Завершено водителем
-          = ticket.driver.username
+          = ticket.driver.fullname
         - else
           - if ticket.rejected_by.present?
             %span.suggested_drivers{"data-drivers" => "#{ticket.suggestions.map {|s| s.driver.id}}"}
@@ -31,7 +31,7 @@
               - for driver_name in ticket.suggested_to
                 %li
                   = driver_name
-          - possible_suggestions = User.available_for_suggestions(ticket)
+          - possible_suggestions = Driver.available_for_suggestions(ticket)
       .well.well-status
         - if possible_suggestions.present?
           Выберите водителя  из списка, чтобы предложить поездку
