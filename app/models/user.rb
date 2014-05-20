@@ -20,17 +20,24 @@ class User < ActiveRecord::Base
 
   attr_accessor :login
 
-  state_machine :state, initial: :normal do
-    after_transition on: :take_a_brake, do: :notify_break
-    after_transition on: :continue, do: :notify_continue
+  state_machine :state, initial: "в работе" do
 
-    event :take_a_brake do
-      transition normal: :paused
+    event "сделать перерыв" do
+      transition "в работе" => "на перерыве"
     end
 
-    event :continue do
-      transition paused: :normal
+    event "продолжить работу" do
+      transition "на перерыве" => "в работе"
     end
+
+    event "выйти из системы" do
+      transition ["в работе", "на перерыве"] => "не в сети"
+    end
+
+    event "начать работу" do
+      transition "не в сети" => "в работе"
+    end
+
   end
 
   def self.drivers
